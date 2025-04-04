@@ -1,5 +1,3 @@
-const { type } = require('os');
-const { title } = require('process');
 const { DataTypes } = require('sequelize');
 
 module.exports = model;
