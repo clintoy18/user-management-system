@@ -40,10 +40,12 @@ cd user-management-system
 bash
 cd backend
 npm install
+npm install rootpath joi sequelize mysql2 nodemailer yamljs
+
 
 bash
 npm start
-
+cd
 3. Frontend Setup
 bash
 
