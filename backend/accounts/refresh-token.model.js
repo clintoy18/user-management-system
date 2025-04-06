@@ -1,7 +1,5 @@
 const { DataTypes } = require('sequelize');
 
-module.exports = model;
-
 const model = (sequelize) => {
     const attributes = {
         token: { type: DataTypes.STRING },
@@ -28,3 +26,6 @@ const model = (sequelize) => {
         
         return sequelize.define('refreshToken', attributes, options);
     }
+
+    
+module.exports = model;

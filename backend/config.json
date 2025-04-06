@@ -3,17 +3,17 @@
         "host": "localhost",
         "port": 3306,
         "user": "root",
-        "password": "",
+        "password": "password.",
         "database": "node-mysql-signup-verification-api"
     },
     "secret": "8cbf89ae-1506-48ed-8a9d-a280d7a3a440",
     "emailFrom": "info@node-mysql-signup-verification-api.com",
     "smtpOptions": {
-        "host": "[Create free test account on https://ethereal.email/]",
+        "host": "smtp.ethereal.email",
         "port": 587,
         "auth": {
-            "user": "",
-            "pass": ""
+            "user": "audra.rolfson68@ethereal.email",
+            "pass": "WJeYK3kpwUJd2vt3de"
         }
     }
 }
