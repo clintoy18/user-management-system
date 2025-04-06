@@ -41,20 +41,9 @@ bash
 cd backend
 npm install
 
-Create a .env file and add:
-
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=yourpassword
-DB_NAME=usermanagement
-JWT_SECRET=your_jwt_secret
-EMAIL_USER=your_email
-EMAIL_PASS=your_email_password
-Start the backend server:
-
 bash
-
 npm start
+
 3. Frontend Setup
 bash
 
