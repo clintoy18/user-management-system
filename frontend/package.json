@@ -1,18 +1,4 @@
 {
-<<<<<<< HEAD
-  "name": "frontend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs"
-}
-=======
   "name": "angular-signup-verification-boilerplate",
   "version": "0.0.0",
   "scripts": {
@@ -59,4 +45,3 @@
   "typescript": "^5.4.3"
   }
 }
->>>>>>> f30b225a9e6aef9cd575ce3079745b9d710a59a2
