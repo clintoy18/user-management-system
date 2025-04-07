@@ -2,7 +2,7 @@
 {
     "compileOnSave": false,
     "compilerOptions": {
-        "baseUrl": "./", // Corrected baseUrl
+        "baseUrl": "./", // Updated baseUrl
         "outDir": "./dist/out-tsc",
         "sourceMap": true,
         "declaration": false,
@@ -17,7 +17,7 @@
             "dom"
         ],
         "paths": {
-            "@app/*": ["src/app/*"],
+            "@app/*": ["src/app/*"], // Updated paths
             "@environments/*": ["src/environments/*"]
         }
     }
