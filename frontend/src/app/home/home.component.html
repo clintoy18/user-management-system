@@ -1,6 +1,38 @@
-<div class="p-4">
-    <div class="container">
-      <h1>Hi {{account.firstName}}!</h1>
-      <p>You're logged in with Angular 10 & JWT!!</p>
-    </div>
+<style>
+  .welcome-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.welcome-card {
+  background-color: #ffffff;
+  padding: 2rem 2.5rem;
+  max-width: 600px;
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.welcome-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.welcome-message {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+</style>
+
+<div class="welcome-container">
+  <div class="welcome-card">  
+    <h1 class="welcome-title">Hi {{ account.firstName }}!</h1>
+    <p class="welcome-message">You're logged in with Angular 10 & JWT 🎉</p>
   </div>
+</div>

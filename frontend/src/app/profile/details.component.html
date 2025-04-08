@@ -1,6 +1,50 @@
-<h1>My Profile</h1>
-<p>
-  <strong>Name: </strong>{{account.title}} {{account.firstName}} {{account.lastName}}<br />
-  <strong>Email: </strong>{{account.email}}
-</p>
-<p><a routerLink="update">Update Profile</a></p>
+<style>
+  .profile-container {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.profile-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #333;
+}
+
+.profile-info p {
+  font-size: 1rem;
+  margin-bottom: 0.8rem;
+  color: #555;
+}
+
+.btn-update {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  background-color: #007bff;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.btn-update:hover {
+  background-color: #0056b3;
+}
+
+</style>
+
+<div class="profile-container">
+  <h1 class="profile-title">My Profile</h1>
+  <div class="profile-info">
+    <p><strong>Name:</strong> {{ account.title }} {{ account.firstName }} {{ account.lastName }}</p>
+    <p><strong>Email:</strong> {{ account.email }}</p>
+  </div>
+  <a routerLink="update" class="btn-update">Update Profile</a>
+</div>
