@@ -1,32 +1,198 @@
-<h3 class="card-header">Login</h3>
-<div class="card-body">
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <div class="form-group">
-            <label>Email</label>
-            <input type="text" formControlName="email" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
+<style>
+    /* General Body Styles */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f7fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+/* Login Wrapper */
+.login-wrapper {
+  width: 100%;
+  max-width: 1000px;
+  box-sizing: border-box;
+}
+
+/* Card Styles */
+.card {
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  background-color: white;
+}
+
+.card-header {
+  background-color: #007bff;
+  color: white;
+  padding: 20px;
+  font-size: 1.25rem;
+}
+
+.card-body {
+  padding: 30px;
+}
+
+/* Form Group Styles */
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+}
+
+input.form-control {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 5px;
+}
+
+input.form-control:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Invalid Feedback */
+.invalid-feedback {
+  font-size: 0.875rem;
+  color: #dc3545;
+  margin-top: 5px;
+}
+
+/* Button Styles */
+.btn {
+  display: inline-block;
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 4px;
+  border: none;
+}
+
+.btn-primary {
+  background-color: #0f0f0f;
+  color: white;
+}
+
+.btn-primary:disabled {
+  background-color: #d6e4f0;
+}
+
+.spinner-border {
+  width: 18px;
+  height: 18px;
+  border-width: 2px;
+  border-color: white;
+}
+
+.login-footer {
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.login-footer a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+.login-footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .login-wrapper {
+    padding: 10px;
+  }
+}
+.social-icon {
+  display: inline-block;
+  margin: 0 10px;
+  font-size: 24px;
+  transition: transform 0.3s;
+}
+
+.social-icon.gmail {
+  color: #db4437; /* Gmail red */
+}
+
+.social-icon.facebook {
+  color: #3b5998; /* Facebook blue */
+}
+
+.social-icon:hover {
+  transform: scale(1.2); /* Optional zoom on hover */
+}
+
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<div class="login-wrapper">
+    <div class="card login-card">
+      <h3 class="card-header text-center">Login</h3>
+      <div class="card-body">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              id="email"
+              type="text"
+              formControlName="email"
+              class="form-control"
+              [ngClass]="{ 'is-invalid': submitted && f.email.errors }"
+              placeholder="Enter your email"
+            />
             <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
-                <div *ngIf="f.email.errors.required">Email is required</div>
-                <div *ngIf="f.email.errors.email">Email is invalid</div>
+              <div *ngIf="f.email.errors.required">Email is required</div>
+              <div *ngIf="f.email.errors.email">Email is invalid</div>
             </div>
-        </div>
-        <div class="form-group">
-            <label>Password</label>
-            <input type="password" formControlName="password" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.password.errors }" />
+          </div>
+  
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              formControlName="password"
+              class="form-control"
+              [ngClass]="{ 'is-invalid': submitted && f.password.errors }"
+              placeholder="Enter your password"
+            />
             <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
-                <div *ngIf="f.password.errors.required">Password is required</div>
+              <div *ngIf="f.password.errors.required">Password is required</div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col">
-                <button [disabled]="loading" class="btn btn-primary">
-                    <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
-                    Login
-                </button>
-                <a routerLink="../register" class="btn btn-link">Register</a>
-            </div>
-            <div class="form-group col text-right">
-                <a routerLink="../forgot-password" class="btn btn-link pr-0">Forgot Password?</a>
-            </div>
-        </div>
-    </form>
-</div>
+          </div>
+  
+          <button [disabled]="loading" class="btn btn-primary btn-block mt-3">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+            Login
+          </button>
+
+          <div class="social-icons mt-3 text-center">
+            <a href="#" class="social-icon gmail" title="Login with Gmail">
+              <i class="fab fa-google"></i>
+            </a>
+            <a href="#" class="social-icon facebook" title="Login with Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+          </div>          
+  
+          <div class="login-footer mt-3 d-flex justify-content-between">
+            <a routerLink="../register" class="btn btn-link pl-0">Register</a>
+            <a routerLink="../forgot-password" class="btn btn-link pr-0">Forgot Password?</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
