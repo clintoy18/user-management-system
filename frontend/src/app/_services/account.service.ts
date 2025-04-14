@@ -105,6 +105,14 @@ export class AccountService {
             }));
     }
 
+    deactivateAccount(id: number) {
+        return this.http.put(`${baseUrl}/accounts/deactivate`, { id });
+    }
+
+    activateAccount(id: number) {
+        return this.http.put(`${baseUrl}/accounts/activate`, { id });
+    }
+
     // helper methods
 
     private refreshTokenTimeout;

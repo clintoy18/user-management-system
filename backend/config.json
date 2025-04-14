@@ -1,9 +1,9 @@
 {
     "database": {
         "host": "localhost",
-        "port": 3306,
+        "port": 3307,
         "user": "root",
-        "password": "password.",
+        "password": "",
         "database": "node-mysql-signup-verification-api"
     },
     "secret": "8cbf89ae-1506-48ed-8a9d-a280d7a3a440",

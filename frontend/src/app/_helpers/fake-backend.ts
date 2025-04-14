@@ -46,8 +46,10 @@ export class FakeBackendInterceptor implements HttpInterceptor {
                     return createAccount();
                 case url.match(/\/accounts\/\d+$/) && method === 'PUT':
                     return updateAccount();
-                case url.match(/\/accounts\/\d+$/) && method === 'DELETE':
-                    return deleteAccount();
+                case url.endsWith('/accounts/deactivate') && method === 'PUT':
+                        return deactivateAccount();  
+                case url.endsWith('/accounts/activate') && method === 'PUT':
+                    return activateAccount();        
                 default:
                     // pass through any requests not handled above
                     return next.handle(request);
@@ -59,18 +61,54 @@ export class FakeBackendInterceptor implements HttpInterceptor {
         function authenticate() {
             const { email, password } = body;
             const account = accounts.find(x => x.email === email && x.password === password && x.isVerified);
-            
+        
             if (!account) return error('Email or password is incorrect');
-
+            if (!account.isActive) return error('Account is deactivated');
+        
             // add refresh token to account
             account.refreshTokens.push(generateRefreshToken());
             localStorage.setItem(accountsKey, JSON.stringify(accounts));
-
+        
             return ok({
                 ...basicDetails(account),
                 jwtToken: generateJwtToken(account)
             });
         }
+
+        //deactivate account
+        function deactivateAccount() {
+            const { id } = body; // Extract the account ID from the request body
+            const account = accounts.find(x => x.id === id); // Find the account by ID
+
+            if (account) {
+                if (!account.isActive) {
+                    return error('Account is already deactivated'); // Prevent redundant deactivation
+                }
+
+                account.isActive = false; // Set the account as deactivated
+                localStorage.setItem(accountsKey, JSON.stringify(accounts)); // Save changes to localStorage
+                return ok({ message: 'Account deactivated successfully' }); // Return success response
+            } else {
+                return error('Account not found'); // Return error if account doesn't exist
+            }
+        }
+        function activateAccount() {
+            const { id } = body; // Extract the account ID from the request body
+            const account = accounts.find(x => x.id === id); // Find the account by ID
+        
+            if (account) {
+                if (account.isActive) {
+                    return error('Account is already active'); // Prevent redundant activation
+                }
+        
+                account.isActive = true; // Set the account as active
+                localStorage.setItem(accountsKey, JSON.stringify(accounts)); // Save changes to localStorage
+                return ok({ message: 'Account activated successfully' }); // Return success response
+            } else {
+                return error('Account not found'); // Return error if account doesn't exist
+            }
+        }
+        
 
         function refreshToken() {
             const refreshToken = getRefreshToken();
@@ -108,7 +146,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
         function register() {
             const account = body;
-        
+
             if (accounts.find(x => x.email === account.email)) {
                 // display email already registered "email" in alert
                 setTimeout(() => {
@@ -119,11 +157,11 @@ export class FakeBackendInterceptor implements HttpInterceptor {
                         <div><strong>NOTE:</strong> The fake backend displayed this "email" so you can test without an api. A real backend would send a real email.</div>`,
                         { autoClose: false });
                 }, 1000);
-        
+
                 // always return ok() response to prevent email enumeration
                 return ok();
             }
-        
+
             // assign account id and a few other properties then save
             account.id = newAccountId();
             if (account.id === 1) {
@@ -135,11 +173,12 @@ export class FakeBackendInterceptor implements HttpInterceptor {
             account.dateCreated = new Date().toISOString();
             account.verificationToken = new Date().getTime().toString();
             account.isVerified = false;
+            account.isActive = true; // New property added to ensure account is active by default
             account.refreshTokens = [];
             delete account.confirmPassword;
             accounts.push(account);
             localStorage.setItem(accountsKey, JSON.stringify(accounts));
-        
+
             // display verification email in alert
             setTimeout(() => {
                 const verifyUrl = `${location.origin}/account/verify-email?token=${account.verificationToken}`;
@@ -254,6 +293,12 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
             // assign account id and a few other properties then save
             account.id = newAccountId();
+            if (account.id === 1) {
+                // first registered account is an admin
+                account.role = Role.Admin;
+            } else {
+                account.role = Role.User;
+            }
             account.dateCreated = new Date().toISOString();
             account.isVerified = true;
             account.refreshTokens = [];
@@ -289,21 +334,21 @@ export class FakeBackendInterceptor implements HttpInterceptor {
             return ok(basicDetails(account));
         }
 
-        function deleteAccount() {
-            if (!isAuthenticated()) return unauthorized();
+        // function deleteAccount() {
+        //     if (!isAuthenticated()) return unauthorized();
 
-            let account = accounts.find(x => x.id === idFromUrl());
+        //     let account = accounts.find(x => x.id === idFromUrl());
 
-            // user accounts can delete own account and admin accounts can delete any account
-            if (account.id !== currentAccount().id && !isAuthorized(Role.Admin)) {
-                return unauthorized();
-            }
+        //     // user accounts can delete own account and admin accounts can delete any account
+        //     if (account.id !== currentAccount().id && !isAuthorized(Role.Admin)) {
+        //         return unauthorized();
+        //     }
 
-            // delete account then save
-            accounts = accounts.filter(x => x.id !== idFromUrl());
-            localStorage.setItem(accountsKey, JSON.stringify(accounts));
-            return ok();
-        }
+        //     // delete account then save
+        //     accounts = accounts.filter(x => x.id !== idFromUrl());
+        //     localStorage.setItem(accountsKey, JSON.stringify(accounts));
+        //     return ok();
+        // }
 
         // helper functions
 
@@ -385,6 +430,8 @@ export class FakeBackendInterceptor implements HttpInterceptor {
             return (document.cookie.split(';').find(x => x.includes('fakeRefreshToken')) || '').split('=')[1];
         }
     }
+
+    
 }
     
 export let fakeBackendProvider = {
