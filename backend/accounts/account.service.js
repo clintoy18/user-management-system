@@ -31,7 +31,10 @@ async function authenticate({ email, password, ipAddress }) {
     if (!account || !account.isVerified || !(await bcrypt.compare(password, account.passwordHash))) {
         throw 'Email or password is incorrect';
     }
-
+    
+    if(!account.isActive) {
+        throw 'Account is disabled';
+    }
     // Authentication successful, so generate JWT and refresh tokens
     const jwtToken = generateJwtToken(account);
     const refreshToken = generateRefreshToken(account, ipAddress);

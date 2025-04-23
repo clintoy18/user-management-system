@@ -257,7 +257,7 @@ function updateSchema(req, res, next) {
 }
 
 function deactivate(req, res, next) {
-    // Only admins can activate the account
+    // Only admins can deactivate the account
     if (req.user.role !== Role.Admin) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
