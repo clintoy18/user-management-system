@@ -28,6 +28,7 @@ async function authenticate({ email, password, ipAddress }) {
 
     if (!account || !account.isVerified || !(await bcrypt.compare(password, account.passwordHash)))
         throw 'Email or password is incorrect';
+    if (!account.isActive) return error('Account is deactivated');
 
     // authentication successful so generate jwt and refresh tokens
     const jwtToken = generateJwtToken(account);
@@ -95,6 +96,7 @@ async function register(params, origin) {
     // first registered account is an admin
     const isFirstAccount = (await db.Account.count()) === 0;
     account.role = isFirstAccount ? Role.Admin : Role.User;
+    account.isActive = true; 
     account.verificationToken = randomTokenString();
 
     // hash password
@@ -318,4 +320,24 @@ async function sendPasswordResetEmail(account, origin) {
         html: `<h4>Reset Password Email</h4>
                 ${message}`
     });
+}
+
+async function deactivateAccount() {
+    const account = await getAccount(id);
+    if (account) {
+        if (!account.isActive) {
+            return error('Account is already deactivated'); // Prevent redundant deactivation
+        }
+
+        account.isActive = false; // Set the account as deactivated
+        
+        try {
+            await db.account.update({ id: account.id }, { isActive: false }); // Save changes to the database
+            return ok({ message: 'Account deactivated successfully' }); // Return success response
+        } catch (err) {
+            return error(`Failed to deactivate account: ${err.message}`); // Handle database errors
+        }
+    } else {
+        return error('Account not found'); // Return error if account doesn't exist
+    }
 }
