@@ -314,12 +314,13 @@ async function activate({ token }) {
     account.isActive = true;
     await account.save();
 }
+
 async function deactivate({ token }) {
     const account = await getAccount(id);
 
     if (!account) throw 'Activation failed';
     if (!account.isActive) throw 'Account already deactivated';
     
-    account.isActive = true;
+    account.isActive = false;
     await account.save();
 }
