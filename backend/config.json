@@ -1,20 +1,19 @@
 {
     "database": {
-        "host": "localhost",
-        "port": 3307,
-        "user": "root",
-        "password": "",
-        "database": "node-mysql-signup-verification-api"
+      "host": "localhost",
+      "port": 3306,
+      "user": "root",
+      "password": "",
+      "database": "node-mysql-signup-verification-apistart"
     },
-    "secret": "8cbf89ae-1506-48ed-8a9d-a280d7a3a440",
+    "secret": "d26055b6ae384e818696049abe297e91",
     "emailFrom": "info@node-mysql-signup-verification-api.com",
     "smtpOptions": {
-        "host": "smtp.ethereal.email",
-        "port": 587,
-        "auth": {
-            "user": "audra.rolfson68@ethereal.email",
-            "pass": "WJeYK3kpwUJd2vt3de"
-        }
+      "host": "smtp.ethereal.email",
+      "port": 587,
+      "auth": {
+        "user": "rahsaan.bechtelar@ethereal.email",
+        "pass": "8CERgXy8PXmmUYp4XE"
+      }
     }
-}
-
+  }
