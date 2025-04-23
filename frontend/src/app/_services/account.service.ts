@@ -106,12 +106,13 @@ export class AccountService {
     }
 
     deactivateAccount(id: number) {
-        return this.http.put(`${baseUrl}/accounts/deactivate`, { id });
-    }
-
+        return this.http.put(`${baseUrl}/accounts/${id}/deactivate`, {});
+      }
+      
     activateAccount(id: number) {
-        return this.http.put(`${baseUrl}/accounts/activate`, { id });
-    }
+        return this.http.put(`${baseUrl}/accounts/${id}/activate`, {});
+      }
+      
 
     // helper methods
 

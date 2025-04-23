@@ -20,6 +20,8 @@ module.exports = {
     getById,
     create,
     update,
+    activate,
+    deactivate,
     delete: _delete
 };
 
@@ -299,4 +301,22 @@ async function sendPasswordResetEmail(account, origin) {
         html: `<h4>Reset Password Email</h4>
                ${message}`
     });
+}
+
+async function activate({ token }) {
+    const account = await getAccount(id);
+    if (!account) throw 'Activation failed';
+    if (account.isActive) throw 'Account already activated';
+    
+    account.isActive = true;
+    await account.save();
+}
+async function deactivate({ token }) {
+    const account = await getAccount(id);
+
+    if (!account) throw 'Activation failed';
+    if (!account.isActive) throw 'Account already deactivated';
+    
+    account.isActive = true;
+    await account.save();
 }

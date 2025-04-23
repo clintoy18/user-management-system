@@ -15,9 +15,13 @@ router.post('/verify-email', verifyEmailSchema, verifyEmail);
 router.post('/forgot-password', forgotPasswordSchema, forgotPassword);
 router.post('/validate-reset-token', validateResetTokenSchema, validateResetToken);
 router.post('/reset-password', resetPasswordSchema, resetPassword);
+router.put('/accounts/:id/activate', authorize(), activate);
+router.put('/accounts/:id/deactivate', authorize(), deactivate);
+
 router.get('/', authorize(Role.Admin), getAll);
 router.get('/:id', authorize(), getById);
 router.post('/', authorize(Role.Admin), createSchema, create);
+
 router.put('/:id', authorize(), updateSchema, update);
 router.delete('/:id', authorize(), _delete);
 
@@ -228,7 +232,56 @@ function updateSchema(req, res, next) {
       .then(() => res.json({ message: 'Account deleted successfully' }))
       .catch(next);
   }
-  
+
+  function activate(req, res, next) {
+    // Only admins can activate the account
+    if (req.user.role !== Role.Admin) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    accountService.getById(req.params.id)
+        .then(account => {
+            if (!account) {
+                return res.status(404).json({ message: 'Account not found' });
+            }
+
+            if (account.isActive) {
+                return res.status(400).json({ message: 'Account is already active' });
+            }
+
+            account.isActive = true;
+            return accountService.update(req.params.id, account)
+                .then(() => res.json({ message: 'Account activated successfully' }));
+        })
+        .catch(next);
+}
+
+function deactivate(req, res, next) {
+    // Only admins can activate the account
+    if (req.user.role !== Role.Admin) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    accountService.getById(req.params.id)
+        .then(account => {
+            if (!account) {
+                return res.status(404).json({ message: 'Account not found' });
+            }
+
+            if (!account.isActive) {
+                return res.status(400).json({ message: 'Account is already deactived' });
+            }
+
+            account.isActive = false;
+            return accountService.update(req.params.id, account)
+                .then(() => res.json({ message: 'Account activated successfully' }));
+        })
+        .catch(next);
+}
+
+
+
+
   // helper functions
   function setTokenCookie(res, token) {
     // create cookie with refresh token that expires in 7 days
