@@ -4,7 +4,7 @@ module.exports = model;
 
 function model(sequelize) {
     const attributes = {
-        email: { type: DataTypes.STRING, allowNull: false},
+        email: { type: DataTypes.STRING, allowNull: false },
         passwordHash: { type: DataTypes.STRING, allowNull: false },
         title: { type: DataTypes.STRING, allowNull: false },
         firstName: { type: DataTypes.STRING, allowNull: false },
@@ -18,14 +18,14 @@ function model(sequelize) {
         passwordReset: { type: DataTypes.DATE },
         created: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
         updated: { type: DataTypes.DATE },
-        isVerified: { 
+        isVerified: {
             type: DataTypes.VIRTUAL,
-            get() { return !!(this.verified || this.passwordReset);}
+            get() { return !!(this.verified || this.passwordReset); }
         }
     };
 
     const options = {
-        //disable default timestamp fields (createdAt and updatedAt)
+        // disable default timestamp fields (createdAt and updatedAt)
         timestamps: false,
         defaultScope: {
             // exclude password hash by default
