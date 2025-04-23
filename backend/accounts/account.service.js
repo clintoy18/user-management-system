@@ -28,7 +28,8 @@ async function authenticate({ email, password, ipAddress }) {
 
     if (!account || !account.isVerified || !(await bcrypt.compare(password, account.passwordHash)))
         throw 'Email or password is incorrect';
-    if (!account.isActive) return error('Account is deactivated');
+    if (!account.isActive )
+        throw 'Account Deactivated';
 
     // authentication successful so generate jwt and refresh tokens
     const jwtToken = generateJwtToken(account);
@@ -96,7 +97,7 @@ async function register(params, origin) {
     // first registered account is an admin
     const isFirstAccount = (await db.Account.count()) === 0;
     account.role = isFirstAccount ? Role.Admin : Role.User;
-    account.isActive = true; 
+    account.isActive = false; 
     account.verificationToken = randomTokenString();
 
     // hash password
