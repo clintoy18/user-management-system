@@ -244,8 +244,8 @@ function randomTokenString() {
 }
 
 function basicDetails(account) {
-    const { id, title, firstName, lastName, email, role, created, updated, isVerified } = account;
-    return { id, title, firstName, lastName, email, role, created, updated, isVerified };
+    const { id, title, firstName, lastName, email, role, created, updated, isVerified, isActive } = account;
+    return { id, title, firstName, lastName, email, role, created, updated, isVerified, isActive };
 }
 
 async function sendVerificationEmail(account, origin) {
@@ -306,7 +306,7 @@ async function sendPasswordResetEmail(account, origin) {
     });
 }
 
-async function activate({ token }) {
+async function activate(id) {
     const account = await getAccount(id);
     if (!account) throw 'Activation failed';
     if (account.isActive) throw 'Account already activated';
@@ -315,10 +315,9 @@ async function activate({ token }) {
     await account.save();
 }
 
-async function deactivate({ token }) {
+async function deactivate(id) {
     const account = await getAccount(id);
-
-    if (!account) throw 'Activation failed';
+    if (!account) throw 'Deactivation failed';
     if (!account.isActive) throw 'Account already deactivated';
     
     account.isActive = false;

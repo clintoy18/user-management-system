@@ -8,14 +8,21 @@ import { Account } from '@app/_models';
 }) 
 
 export class ListComponent implements OnInit { 
-  accounts: any[];
+  accounts: any[] = [];
 
   constructor(private accountService: AccountService) {}
 
   ngOnInit() {
+    this.loadAccounts();
+  }
+
+  loadAccounts() {
     this.accountService.getAll().subscribe(accounts => {
-      this.accounts = accounts;
-      console.log(this.accounts); // Log the accounts to check the data
+      this.accounts = accounts.map(account => ({
+        ...account,
+        isDeactivating: false,
+        isActivating: false
+      }));
     });
   }
 
@@ -33,16 +40,18 @@ export class ListComponent implements OnInit {
     const account = this.accounts.find(x => x.id === id);
     if (account) {
       account.isDeactivating = true;
-      this.accountService.deactivateAccount(id).subscribe({
-        next: () => {
-          account.isActive = false; // Update the account state
-          account.isDeactivating = false; // Reset the deactivating flag
-        },
-        error: (err) => {
-          console.error('Error deactivating account:', err);
-          account.isDeactivating = false; // Reset the flag on error
-        }
-      });
+      this.accountService.deactivateAccount(id)
+        .pipe(first())
+        .subscribe({
+          next: () => {
+            account.isActive = false;
+            account.isDeactivating = false;
+          },
+          error: (error) => {
+            console.error('Error deactivating account:', error);
+            account.isDeactivating = false;
+          }
+        });
     }
   }
 
@@ -50,16 +59,18 @@ export class ListComponent implements OnInit {
     const account = this.accounts.find(x => x.id === id);
     if (account) {
       account.isActivating = true;
-      this.accountService.activateAccount(id).subscribe({
-        next: () => {
-          account.isActive = true; // Update the account state
-          account.isActivating = false; // Reset the activating flag
-        },
-        error: (err) => {
-          console.error('Error activating account:', err);
-          account.isActivating = false; // Reset the flag on error
-        }
-      });
+      this.accountService.activateAccount(id)
+        .pipe(first())
+        .subscribe({
+          next: () => {
+            account.isActive = true;
+            account.isActivating = false;
+          },
+          error: (error) => {
+            console.error('Error activating account:', error);
+            account.isActivating = false;
+          }
+        });
     }
   }
 }

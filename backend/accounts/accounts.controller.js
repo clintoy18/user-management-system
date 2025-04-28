@@ -239,20 +239,8 @@ function updateSchema(req, res, next) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    accountService.getById(req.params.id)
-        .then(account => {
-            if (!account) {
-                return res.status(404).json({ message: 'Account not found' });
-            }
-
-            if (account.isActive) {
-                return res.status(400).json({ message: 'Account is already active' });
-            }
-
-            account.isActive = true;
-            return accountService.update(req.params.id, account)
-                .then(() => res.json({ message: 'Account activated successfully' }));
-        })
+    accountService.activate(req.params.id)
+        .then(() => res.json({ message: 'Account activated successfully' }))
         .catch(next);
 }
 
@@ -262,20 +250,8 @@ function deactivate(req, res, next) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    accountService.getById(req.params.id)
-        .then(account => {
-            if (!account) {
-                return res.status(404).json({ message: 'Account not found' });
-            }
-
-            if (!account.isActive) {
-                return res.status(400).json({ message: 'Account is already deactived' });
-            }
-
-            account.isActive = false;
-            return accountService.update(req.params.id, account)
-                .then(() => res.json({ message: 'Account activated successfully' }));
-        })
+    accountService.deactivate(req.params.id)
+        .then(() => res.json({ message: 'Account deactivated successfully' }))
         .catch(next);
 }
 
