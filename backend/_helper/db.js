@@ -22,6 +22,8 @@ async function initialize() {
 
     // define relationships
     db.Account.hasMany(db.RefreshToken, { onDelete: 'CASCADE' });
+    db.Account.hasOne(db.Employee, { foreignKey: 'accountId', onDelete: 'CASCADE' });
+    db.Employee.belongsTo(db.Account, {foreignKey: 'accountId'})
     db.RefreshToken.belongsTo(db.Account);
 
     // sync all models with database
