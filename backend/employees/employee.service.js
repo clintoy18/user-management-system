@@ -18,7 +18,9 @@ module.exports = {
 
 async function getAll() {
     const employees = await db.Employee.findAll();
-    return employees.map(x => employeeDetails(x));
+    const detailedEmployees = await Promise.all(employees.map(emp => employeeDetails(emp)));
+    return detailedEmployees;
+
 }
 
 async function getById(id) {
@@ -60,7 +62,6 @@ async function create(params){
         throw 'Department is required';
     }
    
-
     const employee = new db.Employee(params);
     // save employee
     await employee.save();
