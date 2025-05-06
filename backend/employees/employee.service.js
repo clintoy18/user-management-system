@@ -49,6 +49,7 @@ async function employeeDetails(employee) {
             address: account.address,
             role: account.role,
             isActive: account.isActive
+        
         } 
     };
      };
@@ -60,6 +61,8 @@ async function create(params){
         throw 'Position is required';
     }
     
+    const existing = await db.Employee.findOne({ where :{accountId: params.accountId}});
+    if(existing) throw 'This account is already assigned to an employee'
    
     const employee = new db.Employee(params);
     // save employee
