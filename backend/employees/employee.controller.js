@@ -19,7 +19,7 @@ router.delete('/:id', authorize(), _delete);
 function createSchema(req, res, next) {
     const schema = Joi.object({
         position: Joi.string().required(),
-        departmentId: Joi.number().required(),
+        departmentId: Joi.number(),
         hireDate: Joi.date().required(),
         isActive: Joi.boolean().default(true),
         accountId: Joi.number().required()

@@ -59,9 +59,7 @@ async function create(params){
     if (!params.position) {
         throw 'Position is required';
     }
-    if (!params.departmentId) {
-        throw 'Department is required';
-    }
+    
    
     const employee = new db.Employee(params);
     // save employee
