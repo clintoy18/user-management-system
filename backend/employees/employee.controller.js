@@ -19,7 +19,7 @@ router.delete('/:id', authorize(), _delete);
 function createSchema(req, res, next) {
     const schema = Joi.object({
         position: Joi.string().required(),
-        department: Joi.string().required(),
+        departmentId: Joi.number().required(),
         hireDate: Joi.date().required(),
         isActive: Joi.boolean().default(true),
         accountId: Joi.number().required()
@@ -30,7 +30,7 @@ function createSchema(req, res, next) {
 function updateSchema(req, res, next) {
     const schema = Joi.object({
         position: Joi.string().optional(),
-        department: Joi.string().optional(),
+        departmentId: Joi.number().optional(),
         hireDate: Joi.date().optional(),
         isActive: Joi.boolean().optional(),
         accountId: Joi.number().optional()

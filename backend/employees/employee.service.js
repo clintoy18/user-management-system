@@ -29,7 +29,7 @@ async function getById(id) {
 }
 
 async function employeeDetails(employee) {
-    const { id, firstName, lastName, phoneNumber, address, position, department, hireDate, salary, isActive, accountId } = employee;
+    const { id, firstName, lastName, phoneNumber, address, position, departmentId, hireDate, salary, isActive, accountId } = employee;
 
     // get account details 
     let account = null;
@@ -39,7 +39,7 @@ async function employeeDetails(employee) {
     catch (error) {
         account = null; 
        }
-    return { id, firstName, lastName, phoneNumber, address, position, department, hireDate, salary, isActive, accountId,
+    return { id, firstName, lastName, phoneNumber, address, position, departmentId, hireDate, salary, isActive, accountId,
         account: {
             id: account.id,
             email: account.email,
@@ -49,7 +49,8 @@ async function employeeDetails(employee) {
             address: account.address,
             role: account.role,
             isActive: account.isActive
-        } };
+        } 
+    };
      };
 
 
@@ -58,7 +59,7 @@ async function create(params){
     if (!params.position) {
         throw 'Position is required';
     }
-    if (!params.department) {
+    if (!params.departmentId) {
         throw 'Department is required';
     }
    
