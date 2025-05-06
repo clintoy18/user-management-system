@@ -26,6 +26,8 @@ async function initialize() {
     db.Department = require('../departments/department.model')(sequelize);
     db.Employee = require('../employees/employee.model')(sequelize);
     db.Workflow = require('../workflows/workflows.model')(sequelize);
+    db.Request = require('../requests/request.model')(sequelize);
+    db.RequestItem = require('../requests/request-item.model')(sequelize);
 
     // Define relationships between models
     db.Account.hasMany(db.RefreshToken, { onDelete: 'CASCADE' });
@@ -37,6 +39,9 @@ async function initialize() {
 
     db.Workflow.belongsTo(db.Employee, { foreignKey: 'employeeId', as: 'employee' });
     db.Employee.hasMany(db.Workflow, { foreignKey: 'employeeId', as: 'workflows' });
+
+    db.Request.hasMany(db.RequestItem,{ foreignKey: 'requestId', as: 'items'});
+    db.RequestItem.belongsTo(db.Request, {foreignKey : 'requestId' ,as:  'request'} );
 
 
 
