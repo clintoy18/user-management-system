@@ -31,7 +31,7 @@ async function initialize() {
     db.Account.hasOne(db.Employee, { foreignKey: 'accountId', onDelete: 'CASCADE' });
     db.Employee.belongsTo(db.Account, { foreignKey: 'accountId' });
 
-    db.Department.hasMany(db.Employee, { foreignKey: 'departmentId' });
+    db.Department.hasMany(db.Employee, { foreignKey: 'departmentId'});
     db.Employee.belongsTo(db.Department, { foreignKey: 'departmentId', as: 'department' });
 
     db.RefreshToken.belongsTo(db.Account);
