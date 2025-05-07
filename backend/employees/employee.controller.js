@@ -14,6 +14,7 @@ router.get('/:id', authorize(), getById);
 router.post('/', authorize(Role.Admin), createSchema, create);
 router.put('/:id', authorize(), updateSchema, update);
 router.delete('/:id', authorize(), _delete);
+router.post('/transfer', authorize(Role.Admin), transferSchema, transfer);
 
 // Schemas
 function createSchema(req, res, next) {
@@ -34,6 +35,14 @@ function updateSchema(req, res, next) {
         hireDate: Joi.date().optional(),
         isActive: Joi.boolean().optional(),
         accountId: Joi.number().optional()
+    });
+    validateRequest(req, next, schema);
+}
+
+function transferSchema(req, res, next) {
+    const schema = Joi.object({
+        employeeId: Joi.number().required(),
+        newDepartmentId: Joi.number().required()
     });
     validateRequest(req, next, schema);
 }
@@ -67,6 +76,21 @@ function _delete(req, res, next) {
     employeeService._delete(req.params.id)
         .then(() => res.json({ message: 'Employee deleted successfully' }))
         .catch(next);
+}
+
+async function transfer(req, res, next) {
+    try {
+        const { employeeId, newDepartmentId } = req.body;
+        
+        if (!employeeId || !newDepartmentId) {
+            return res.status(400).json({ message: 'Employee ID and new department ID are required' });
+        }
+        
+        const updatedEmployee = await employeeService.transferEmployee(employeeId, newDepartmentId);
+        res.json(updatedEmployee);
+    } catch (error) {
+        next(error);
+    }
 }
 
 module.exports = router;

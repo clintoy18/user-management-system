@@ -12,6 +12,7 @@ module.exports = {
     _delete,
     // getByEmail,
     employeeDetails,
+    transferEmployee,
 }
 
 
@@ -97,6 +98,21 @@ async function getEmployee(id){
     const employee = await db.Employee.findByPk(id);
     if (!employee) throw 'Employee not found';
     return employee;
+}
+
+async function transferEmployee(employeeId, newDepartmentId) {
+    // Get the employee
+    const employee = await getEmployee(employeeId);
+    
+    // Validate the new department exists
+    const department = await db.Department.findByPk(newDepartmentId);
+    if (!department) throw 'Department not found';
+    
+    // Update the employee's department
+    employee.departmentId = newDepartmentId;
+    await employee.save();
+    
+    return employeeDetails(employee);
 }
 
 
