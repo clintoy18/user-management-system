@@ -24,7 +24,7 @@ function model(sequelize) {
   };
 
   const options = {
-    timestamps: true // enables createdAt and updatedAt
+    timestamps: true 
   };
 
   return sequelize.define('workflow', attributes, options);

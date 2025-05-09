@@ -10,7 +10,6 @@ module.exports = {
     create,
     update, 
     _delete,
-    // getByEmail,
     employeeDetails,
     transferEmployee,
 }
