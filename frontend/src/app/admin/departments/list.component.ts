@@ -1,16 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { DepartmentService } from '@app/_services/department.service';
-import { Department } from '@app/_models/department';
+import { DepartmentService } from '../../_services/department.service';
+import { Department } from '../../_models/department';
+import { EmployeeService } from '../../_services/employee.service';
+import { Employee } from '../../_models/employee';
 
 @Component({
     templateUrl: 'list.component.html'
 })
 export class ListComponent implements OnInit {
-    departments: Department[] = [];
+    departments: (Department & { employeeCount?: number })[] = [];
+    employees: Employee[] = [];
 
     constructor(
         private departmentService: DepartmentService,
+        private employeeService: EmployeeService,
         private router: Router
     ) { }
 
@@ -19,7 +23,15 @@ export class ListComponent implements OnInit {
     }
 
     loadDepartments() {
-        this.departmentService.getAll().subscribe(departments => this.departments = departments);
+        this.employeeService.getAll().subscribe(employees => {
+            this.employees = employees;
+            this.departmentService.getAll().subscribe(departments => {
+                this.departments = departments.map(dept => ({
+                    ...dept,
+                    employeeCount: employees.filter(emp => emp.department === dept.name).length
+                }));
+            });
+        });
     }
 
     add() {

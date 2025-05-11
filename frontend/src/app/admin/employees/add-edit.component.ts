@@ -5,6 +5,8 @@ import { EmployeeService } from '@app/_services/employee.service';
 import { Employee } from '@app/_models/employee';
 import { AccountService } from '@app/_services/account.service';
 import { Account } from '@app/_models/account';
+import { Department } from '@app/_models/department';
+import { DepartmentService } from '@app/_services/department.service';
 
 @Component({
     templateUrl: 'add-edit.component.html'
@@ -16,13 +18,15 @@ export class AddEditComponent implements OnInit {
     loading = false;
     submitted = false;
     accounts: Account[] = [];
+    departments: Department[] = [];
 
     constructor(
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
         private router: Router,
         private employeeService: EmployeeService,
-        private accountService: AccountService
+        private accountService: AccountService,
+        private departmentService: DepartmentService
     ) { }
 
     ngOnInit() {
@@ -30,7 +34,7 @@ export class AddEditComponent implements OnInit {
         this.isAddMode = !this.id;
 
         this.form = this.formBuilder.group({
-            employeeId: ['', Validators.required],
+            employeeId: [{ value: '', disabled: true }, Validators.required],
             account: ['', Validators.required],
             position: ['', Validators.required],
             department: ['', Validators.required],
@@ -39,10 +43,24 @@ export class AddEditComponent implements OnInit {
         });
 
         this.accountService.getAll().subscribe(accounts => this.accounts = accounts);
+        this.departmentService.getAll().subscribe(departments => this.departments = departments);
 
         if (!this.isAddMode) {
             this.employeeService.getById(this.id)
                 .subscribe(x => this.form.patchValue(x));
+        } else {
+            this.employeeService.getAll().subscribe(employees => {
+                let max = 0;
+                employees.forEach(emp => {
+                    const match = emp.employeeId.match(/EMP(\d+)/);
+                    if (match) {
+                        const num = parseInt(match[1], 10);
+                        if (num > max) max = num;
+                    }
+                });
+                const nextId = 'EMP' + String(max + 1).padStart(3, '0');
+                this.form.patchValue({ employeeId: nextId });
+            });
         }
     }
 
@@ -54,15 +72,16 @@ export class AddEditComponent implements OnInit {
             return;
         }
         this.loading = true;
+        const formValue = { ...this.form.getRawValue() };
         if (this.isAddMode) {
-            this.createEmployee();
+            this.createEmployee(formValue);
         } else {
-            this.updateEmployee();
+            this.updateEmployee(formValue);
         }
     }
 
-    private createEmployee() {
-        this.employeeService.create(this.form.value)
+    private createEmployee(formValue: any) {
+        this.employeeService.create(formValue)
             .subscribe({
                 next: () => {
                     this.router.navigate(['../'], { relativeTo: this.route });
@@ -73,8 +92,8 @@ export class AddEditComponent implements OnInit {
             });
     }
 
-    private updateEmployee() {
-        this.employeeService.update(this.id, this.form.value)
+    private updateEmployee(formValue: any) {
+        this.employeeService.update(this.id, formValue)
             .subscribe({
                 next: () => {
                     this.router.navigate(['../'], { relativeTo: this.route });

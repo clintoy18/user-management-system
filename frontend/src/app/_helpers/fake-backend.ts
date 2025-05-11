@@ -504,6 +504,11 @@ export class FakeBackendInterceptor implements HttpInterceptor {
                 return error('Account does not exist. Please create an account first.');
             }
 
+            // Check for duplicate employeeId
+            if (employees.some(e => e.employeeId === employee.employeeId)) {
+                return error('Employee ID already exists.');
+            }
+
             employee.id = newEmployeeId();
             employee.accountId = account.id; // Store the relationship
             employee.account = account.email; // For display

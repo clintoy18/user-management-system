@@ -6,6 +6,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Description</th>
+                    <th>Employee Count</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -13,6 +14,7 @@
                 <tr *ngFor="let department of departments">
                     <td>{{department.name}}</td>
                     <td>{{department.description}}</td>
+                    <td>{{department.employeeCount || 0}}</td>
                     <td>
                         <button class="btn btn-primary btn-sm me-1" (click)="edit(department.id)">Edit</button>
                         <button class="btn btn-danger btn-sm" (click)="delete(department.id)">Delete</button>

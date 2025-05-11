@@ -4,7 +4,7 @@
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
             <div class="mb-3">
                 <label class="form-label">Employee ID</label>
-                <input type="text" formControlName="employeeId" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.employeeId.errors }">
+                <input type="text" formControlName="employeeId" class="form-control" [readonly]="true" [ngClass]="{ 'is-invalid': submitted && f.employeeId.errors }">
                 <div *ngIf="submitted && f.employeeId.errors" class="invalid-feedback">Employee ID is required</div>
             </div>
             <div class="mb-3">
@@ -22,7 +22,10 @@
             </div>
             <div class="mb-3">
                 <label class="form-label">Department</label>
-                <input type="text" formControlName="department" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.department.errors }">
+                <select formControlName="department" class="form-select" [ngClass]="{ 'is-invalid': submitted && f.department.errors }">
+                    <option value="">Select department</option>
+                    <option *ngFor="let dept of departments" [value]="dept.name">{{ dept.name }}</option>
+                </select>
                 <div *ngIf="submitted && f.department.errors" class="invalid-feedback">Department is required</div>
             </div>
             <div class="mb-3">
