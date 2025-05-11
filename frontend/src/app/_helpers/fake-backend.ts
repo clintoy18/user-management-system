@@ -7,8 +7,20 @@ import { AlertService } from '@app/_services';
 import { Role } from '@app/_models';
 
 // array in local storage for accounts
-const accountsKey = 'angular-10-signup-verification-boilerplate-accounts';
+const accountsKey = 'angular-10-signup-verification-boilerplate-accountss';
 let accounts = JSON.parse(localStorage.getItem(accountsKey)) || [];
+
+// array in local storage for requests
+const requestsKey = 'angular-10-signup-verification-boilerplate-requests';
+let requests = JSON.parse(localStorage.getItem(requestsKey)) || [];
+
+// array in local storage for employees
+const employeesKey = 'angular-10-signup-verification-boilerplate-employees';
+let employees = JSON.parse(localStorage.getItem(employeesKey)) || [];
+
+// array in local storage for departments
+const departmentsKey = 'angular-10-signup-verification-boilerplate-departments';
+let departments = JSON.parse(localStorage.getItem(departmentsKey)) || [];
 
 @Injectable()
 export class FakeBackendInterceptor implements HttpInterceptor {
@@ -50,6 +62,40 @@ export class FakeBackendInterceptor implements HttpInterceptor {
                         return deactivateAccount();  
                 case url.endsWith('/accounts/activate') && method === 'PUT':
                     return activateAccount();        
+                case url.endsWith('/requests') && method === 'GET':
+                    return getRequests();
+                case url.match(/\/requests\/\d+$/) && method === 'GET':
+                    return getRequestById();
+                case url.endsWith('/requests') && method === 'POST':
+                    return createRequest();
+                case url.match(/\/requests\/\d+$/) && method === 'PUT':
+                    return updateRequest();
+                case url.match(/\/requests\/\d+$/) && method === 'DELETE':
+                    return deleteRequest();
+                case url.match(/\/requests\/\d+\/approve$/) && method === 'PUT':
+                    return approveRequest();
+                case url.match(/\/requests\/\d+\/reject$/) && method === 'PUT':
+                    return rejectRequest();
+                case url.endsWith('/employees') && method === 'GET':
+                    return getEmployees();
+                case url.match(/\/employees\/\w+$/) && method === 'GET':
+                    return getEmployeeById();
+                case url.endsWith('/employees') && method === 'POST':
+                    return createEmployee();
+                case url.match(/\/employees\/\w+$/) && method === 'PUT':
+                    return updateEmployee();
+                case url.match(/\/employees\/\w+$/) && method === 'DELETE':
+                    return deleteEmployee();
+                case url.endsWith('/departments') && method === 'GET':
+                    return getDepartments();
+                case url.match(/\/departments\/[^/]+$/) && method === 'GET':
+                    return getDepartmentById();
+                case url.endsWith('/departments') && method === 'POST':
+                    return createDepartment();
+                case url.match(/\/departments\/[^/]+$/) && method === 'PUT':
+                    return updateDepartment();
+                case url.match(/\/departments\/[^/]+$/) && method === 'DELETE':
+                    return deleteDepartment();
                 default:
                     // pass through any requests not handled above
                     return next.handle(request);
@@ -350,6 +396,198 @@ export class FakeBackendInterceptor implements HttpInterceptor {
         //     return ok();
         // }
 
+        // request functions
+        function getRequests() {
+            if (!isAuthenticated()) return unauthorized();
+            return ok(requests);
+        }
+
+        function getRequestById() {
+            if (!isAuthenticated()) return unauthorized();
+            const request = requests.find(x => x.id === idFromUrl());
+            return ok(request);
+        }
+
+        function createRequest() {
+            if (!isAuthenticated()) return unauthorized();
+            const request = body;
+            request.id = newRequestId();
+            request.status = 'pending';
+            request.createdAt = new Date().toISOString();
+            request.updatedAt = new Date().toISOString();
+            request.userId = currentAccount().id;
+            request.userName = currentAccount().firstName + ' ' + currentAccount().lastName;
+            requests.push(request);
+            localStorage.setItem(requestsKey, JSON.stringify(requests));
+            return ok(request);
+        }
+
+        function updateRequest() {
+            if (!isAuthenticated()) return unauthorized();
+            const request = requests.find(x => x.id === idFromUrl());
+            if (!request) return error('Request not found');
+            
+            // only allow updating title and description
+            request.title = body.title;
+            request.description = body.description;
+            request.updatedAt = new Date().toISOString();
+            localStorage.setItem(requestsKey, JSON.stringify(requests));
+            return ok(request);
+        }
+
+        function deleteRequest() {
+            if (!isAuthenticated()) return unauthorized();
+            if (!isAuthorized(Role.Admin)) return unauthorized();
+            
+            requests = requests.filter(x => x.id !== idFromUrl());
+            localStorage.setItem(requestsKey, JSON.stringify(requests));
+            return ok();
+        }
+
+        function approveRequest() {
+            if (!isAuthenticated()) return unauthorized();
+            if (!isAuthorized(Role.Admin)) return unauthorized();
+            
+            const request = requests.find(x => x.id === idFromUrl());
+            if (!request) return error('Request not found');
+            
+            if (request.status === 'approved') {
+                return error('Request is already approved');
+            }
+            
+            request.status = 'approved';
+            request.updatedAt = new Date().toISOString();
+            localStorage.setItem(requestsKey, JSON.stringify(requests));
+            return ok(request);
+        }
+
+        function rejectRequest() {
+            if (!isAuthenticated()) return unauthorized();
+            if (!isAuthorized(Role.Admin)) return unauthorized();
+            
+            const request = requests.find(x => x.id === idFromUrl());
+            if (!request) return error('Request not found');
+            
+            if (request.status === 'rejected') {
+                return error('Request is already rejected');
+            }
+            
+            request.status = 'rejected';
+            request.updatedAt = new Date().toISOString();
+            localStorage.setItem(requestsKey, JSON.stringify(requests));
+            return ok(request);
+        }
+
+        function newRequestId() {
+            return requests.length ? Math.max(...requests.map(x => x.id)) + 1 : 1;
+        }
+
+        // Employee functions
+        function getEmployees() {
+            if (!isAuthenticated()) return unauthorized();
+            return ok(employees.map(mapEmployeeToFrontend));
+        }
+
+        function getEmployeeById() {
+            if (!isAuthenticated()) return unauthorized();
+            const employee = employees.find(x => x.id == idFromUrl());
+            return ok(mapEmployeeToFrontend(employee));
+        }
+
+        function createEmployee() {
+            if (!isAuthenticated()) return unauthorized();
+            const employee = body;
+
+            // Find account by email or id
+            const account = accounts.find(x => x.email === employee.account || x.id === employee.accountId);
+            if (!account) {
+                return error('Account does not exist. Please create an account first.');
+            }
+
+            // Check for duplicate employeeId
+            if (employees.some(e => e.employeeId === employee.employeeId)) {
+                return error('Employee ID already exists.');
+            }
+
+            employee.id = newEmployeeId();
+            employee.accountId = account.id; // Store the relationship
+            employee.account = account.email; // For display
+            employee.isActive = employee.status === 'Active';
+            employees.push(employee);
+            localStorage.setItem(employeesKey, JSON.stringify(employees));
+            return ok(mapEmployeeToFrontend(employee));
+        }
+
+        function updateEmployee() {
+            if (!isAuthenticated()) return unauthorized();
+            const employee = employees.find(x => x.id == idFromUrl());
+            if (!employee) return error('Employee not found');
+            Object.assign(employee, body);
+            employee.isActive = employee.status === 'Active';
+            localStorage.setItem(employeesKey, JSON.stringify(employees));
+            return ok(mapEmployeeToFrontend(employee));
+        }
+
+        function deleteEmployee() {
+            if (!isAuthenticated()) return unauthorized();
+            employees = employees.filter(x => x.id != idFromUrl());
+            localStorage.setItem(employeesKey, JSON.stringify(employees));
+            return ok();
+        }
+
+        function newEmployeeId() {
+            return (Date.now() + Math.random()).toString();
+        }
+
+        function mapEmployeeToFrontend(employee) {
+            if (!employee) return employee;
+            return {
+                ...employee,
+                status: employee.isActive ? 'Active' : 'Inactive'
+            };
+        }
+
+        // Department functions
+        function getDepartments() {
+            if (!isAuthenticated()) return unauthorized();
+            return ok(departments);
+        }
+
+        function getDepartmentById() {
+            if (!isAuthenticated()) return unauthorized();
+            const department = departments.find(x => x.id == idFromUrl());
+            return ok(department);
+        }
+
+        function createDepartment() {
+            if (!isAuthenticated()) return unauthorized();
+            const department = body;
+            department.id = newDepartmentId();
+            departments.push(department);
+            localStorage.setItem(departmentsKey, JSON.stringify(departments));
+            return ok(department);
+        }
+
+        function updateDepartment() {
+            if (!isAuthenticated()) return unauthorized();
+            const department = departments.find(x => x.id == idFromUrl());
+            if (!department) return error('Department not found');
+            Object.assign(department, body);
+            localStorage.setItem(departmentsKey, JSON.stringify(departments));
+            return ok(department);
+        }
+
+        function deleteDepartment() {
+            if (!isAuthenticated()) return unauthorized();
+            departments = departments.filter(x => x.id != idFromUrl());
+            localStorage.setItem(departmentsKey, JSON.stringify(departments));
+            return ok();
+        }
+
+        function newDepartmentId() {
+            return (Date.now() + Math.random()).toString();
+        }
+
         // helper functions
 
         function ok(body?) {
@@ -385,7 +623,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
         function idFromUrl() {
             const urlParts = url.split('/');
-            return parseInt(urlParts[urlParts.length - 1]);
+            return urlParts[urlParts.length - 1];
         }
 
         function newAccountId() {
