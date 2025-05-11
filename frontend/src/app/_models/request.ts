@@ -7,4 +7,7 @@ export interface Request {
     updatedAt: string;
     userId: string;
     userName?: string;
+    type?: string;
+    employee?: string;
+    items?: any[];
 } 

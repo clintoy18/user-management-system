@@ -423,6 +423,10 @@ export class FakeBackendInterceptor implements HttpInterceptor {
             const request = requests.find(x => x.id === idFromUrl());
             if (!request) return error('Request not found');
             
+            if (request.status === 'approved') {
+                return error('Request is already approved');
+            }
+            
             request.status = 'approved';
             request.updatedAt = new Date().toISOString();
             localStorage.setItem(requestsKey, JSON.stringify(requests));
@@ -435,6 +439,10 @@ export class FakeBackendInterceptor implements HttpInterceptor {
             
             const request = requests.find(x => x.id === idFromUrl());
             if (!request) return error('Request not found');
+            
+            if (request.status === 'rejected') {
+                return error('Request is already rejected');
+            }
             
             request.status = 'rejected';
             request.updatedAt = new Date().toISOString();

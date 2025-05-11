@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { first } from 'rxjs/operators';
 import { RequestService } from '@app/_services/request.service';    
 import { Request } from '@app/_models/request';
+import { AlertService } from '@app/_services';
 
 @Component({
     templateUrl: 'list.component.html'
@@ -9,7 +10,10 @@ import { Request } from '@app/_models/request';
 export class ListComponent implements OnInit {
     requests: any[] = [];
 
-    constructor(private requestService: RequestService) { }
+    constructor(
+        private requestService: RequestService,
+        private alertService: AlertService
+    ) { }
 
     ngOnInit() {
         this.loadRequests();
@@ -31,8 +35,16 @@ export class ListComponent implements OnInit {
         request.isDeleting = true;
         this.requestService.delete(id)
             .pipe(first())
-            .subscribe(() => {
-                this.requests = this.requests.filter(x => x.id !== id);
+            .subscribe({
+                next: () => {
+                    this.requests = this.requests.filter(x => x.id !== id);
+                    this.alertService.success('Request deleted successfully');
+                },
+                error: error => {
+                    console.error('Error deleting request:', error);
+                    this.alertService.error(error.error.message || 'Error deleting request');
+                    request.isDeleting = false;
+                }
             });
     }
 
@@ -46,9 +58,11 @@ export class ListComponent implements OnInit {
                     next: () => {
                         request.status = 'approved';
                         request.isApproving = false;
+                        this.alertService.success('Request approved successfully');
                     },
                     error: (error) => {
                         console.error('Error approving request:', error);
+                        this.alertService.error(error.error.message || 'Error approving request');
                         request.isApproving = false;
                     }
                 });
@@ -65,9 +79,11 @@ export class ListComponent implements OnInit {
                     next: () => {
                         request.status = 'rejected';
                         request.isRejecting = false;
+                        this.alertService.success('Request rejected successfully');
                     },
                     error: (error) => {
                         console.error('Error rejecting request:', error);
+                        this.alertService.error(error.error.message || 'Error rejecting request');
                         request.isRejecting = false;
                     }
                 });
