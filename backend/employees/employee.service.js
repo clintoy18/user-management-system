@@ -30,30 +30,36 @@ async function getById(id) {
 }
 
 async function employeeDetails(employee) {
-    const { id, firstName, lastName, phoneNumber, address, position, departmentId, hireDate, salary, isActive, accountId } = employee;
+    const { id, employeeId, position, departmentId, hireDate, isActive, accountId } = employee;
 
     // get account details 
     let account = null;
-    try{
+    try {
         account = await employee.getAccount();    
-    }
-    catch (error) {
+    } catch (error) {
         account = null; 
-       }
-    return { id, firstName, lastName, phoneNumber, address, position, departmentId, hireDate, salary, isActive, accountId,
-        account: {
-            id: account.id,
-            email: account.email,
-            firstName: account.firstName,
-            lastName: account.lastName,
-            phoneNumber: account.phoneNumber,
-            address: account.address,
-            role: account.role,
-            isActive: account.isActive
-        
-        } 
+    }
+
+    // get department details using the association
+    let department = null;
+    try {
+        department = await employee.getDepartment();
+    } catch (error) {
+        department = null;
+    }
+
+    return {
+        id,
+        employeeId,
+        position,
+        departmentId,
+        department: department ? department.name : null, // department name
+        hireDate,
+        isActive,
+        accountId,
+        account: account ? account.email : null // account email
     };
-     };
+}
 
 
 async function create(params){
@@ -61,15 +67,25 @@ async function create(params){
     if (!params.position) {
         throw 'Position is required';
     }
-    
+    if (!params.employeeId) {
+        throw 'Employee ID is required';
+    }
+    // Check for duplicate employeeId
+    if (await db.Employee.findOne({ where: { employeeId: params.employeeId } })) {
+        throw 'Employee ID "' + params.employeeId + '" is already taken';
+    }
+    // Check for duplicate account assignment
     const existing = await db.Employee.findOne({ where :{accountId: params.accountId}});
-    if(existing) throw 'This account is already assigned to an employee'
-   
+    if(existing) throw 'This account is already assigned to an employee';
+
+    // Check if account exists
+    const account = await db.Account.findByPk(params.accountId);
+    if (!account) throw 'Account does not exist. Please create an account first.';
+
     const employee = new db.Employee(params);
     // save employee
     await employee.save();
     return employeeDetails(employee);
-
 }
 
 async function update(id, params) {

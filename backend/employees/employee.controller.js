@@ -19,6 +19,7 @@ router.post('/transfer', authorize(Role.Admin), transferSchema, transfer);
 // Schemas
 function createSchema(req, res, next) {
     const schema = Joi.object({
+        employeeId: Joi.string().required(),
         position: Joi.string().required(),
         departmentId: Joi.number(),
         hireDate: Joi.date().required(),

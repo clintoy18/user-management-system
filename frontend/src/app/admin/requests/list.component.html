@@ -1,0 +1,73 @@
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col">
+                <h4>Requests</h4>
+            </div>
+            <div class="col text-end">
+                <a routerLink="add" class="btn btn-primary">Add Request</a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th style="width: 20%">Title</th>
+                        <th style="width: 30%">Description</th>
+                        <th style="width: 15%">Status</th>
+                        <th style="width: 15%">User</th>
+                        <th style="width: 20%">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let request of requests">
+                        <td>{{request.title}}</td>
+                        <td>{{request.description}}</td>
+                        <td>
+                            <span class="badge" [ngClass]="{
+                                'bg-warning': request.status === 'pending',
+                                'bg-success': request.status === 'approved',
+                                'bg-danger': request.status === 'rejected'
+                            }">
+                                {{request.status}}
+                            </span>
+                        </td>
+                        <td>{{request.userName}}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a [routerLink]="['edit', request.id]" class="btn btn-sm btn-primary me-2">Edit</a>
+                                <button *ngIf="request.status === 'pending'"
+                                    (click)="approveRequest(request.id)"
+                                    [disabled]="request.isApproving"
+                                    class="btn btn-sm btn-success me-2">
+                                    <span *ngIf="request.isApproving" class="spinner-border spinner-border-sm me-1"></span>
+                                    Approve
+                                </button>
+                                <button *ngIf="request.status === 'pending'"
+                                    (click)="rejectRequest(request.id)"
+                                    [disabled]="request.isRejecting"
+                                    class="btn btn-sm btn-danger me-2">
+                                    <span *ngIf="request.isRejecting" class="spinner-border spinner-border-sm me-1"></span>
+                                    Reject
+                                </button>
+                                <button (click)="deleteRequest(request.id)"
+                                    [disabled]="request.isDeleting"
+                                    class="btn btn-sm btn-danger">
+                                    <span *ngIf="request.isDeleting" class="spinner-border spinner-border-sm me-1"></span>
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngIf="!requests">
+                        <td colspan="5" class="text-center">
+                            <span class="spinner-border spinner-border-lg align-center"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
