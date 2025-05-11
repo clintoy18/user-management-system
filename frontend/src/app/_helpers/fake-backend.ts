@@ -483,7 +483,16 @@ export class FakeBackendInterceptor implements HttpInterceptor {
         function createEmployee() {
             if (!isAuthenticated()) return unauthorized();
             const employee = body;
+
+            // Find account by email or id
+            const account = accounts.find(x => x.email === employee.account || x.id === employee.accountId);
+            if (!account) {
+                return error('Account does not exist. Please create an account first.');
+            }
+
             employee.id = newEmployeeId();
+            employee.accountId = account.id; // Store the relationship
+            employee.account = account.email; // For display
             employee.isActive = employee.status === 'Active';
             employees.push(employee);
             localStorage.setItem(employeesKey, JSON.stringify(employees));

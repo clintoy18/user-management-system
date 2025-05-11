@@ -9,7 +9,10 @@
             </div>
             <div class="mb-3">
                 <label class="form-label">Account</label>
-                <input type="text" formControlName="account" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.account.errors }">
+                <select formControlName="account" class="form-select" [ngClass]="{ 'is-invalid': submitted && f.account.errors }">
+                    <option value="">Select account</option>
+                    <option *ngFor="let acc of accounts" [value]="acc.email">{{ acc.email }}</option>
+                </select>
                 <div *ngIf="submitted && f.account.errors" class="invalid-feedback">Account is required</div>
             </div>
             <div class="mb-3">

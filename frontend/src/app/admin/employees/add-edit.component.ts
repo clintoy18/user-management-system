@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EmployeeService } from '@app/_services/employee.services';
+import { EmployeeService } from '@app/_services/employee.service';
 import { Employee } from '@app/_models/employee';
+import { AccountService } from '@app/_services/account.service';
+import { Account } from '@app/_models/account';
 
 @Component({
     templateUrl: 'add-edit.component.html'
@@ -13,12 +15,14 @@ export class AddEditComponent implements OnInit {
     isAddMode: boolean;
     loading = false;
     submitted = false;
+    accounts: Account[] = [];
 
     constructor(
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
         private router: Router,
-        private employeeService: EmployeeService
+        private employeeService: EmployeeService,
+        private accountService: AccountService
     ) { }
 
     ngOnInit() {
@@ -33,6 +37,8 @@ export class AddEditComponent implements OnInit {
             hireDate: ['', Validators.required],
             status: ['', Validators.required]
         });
+
+        this.accountService.getAll().subscribe(accounts => this.accounts = accounts);
 
         if (!this.isAddMode) {
             this.employeeService.getById(this.id)
