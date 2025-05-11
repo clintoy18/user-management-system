@@ -18,6 +18,10 @@ let requests = JSON.parse(localStorage.getItem(requestsKey)) || [];
 const employeesKey = 'angular-10-signup-verification-boilerplate-employees';
 let employees = JSON.parse(localStorage.getItem(employeesKey)) || [];
 
+// array in local storage for departments
+const departmentsKey = 'angular-10-signup-verification-boilerplate-departments';
+let departments = JSON.parse(localStorage.getItem(departmentsKey)) || [];
+
 @Injectable()
 export class FakeBackendInterceptor implements HttpInterceptor {
     constructor(private alertService: AlertService) { }
@@ -82,6 +86,16 @@ export class FakeBackendInterceptor implements HttpInterceptor {
                     return updateEmployee();
                 case url.match(/\/employees\/\w+$/) && method === 'DELETE':
                     return deleteEmployee();
+                case url.endsWith('/departments') && method === 'GET':
+                    return getDepartments();
+                case url.match(/\/departments\/[^/]+$/) && method === 'GET':
+                    return getDepartmentById();
+                case url.endsWith('/departments') && method === 'POST':
+                    return createDepartment();
+                case url.match(/\/departments\/[^/]+$/) && method === 'PUT':
+                    return updateDepartment();
+                case url.match(/\/departments\/[^/]+$/) && method === 'DELETE':
+                    return deleteDepartment();
                 default:
                     // pass through any requests not handled above
                     return next.handle(request);
@@ -526,6 +540,47 @@ export class FakeBackendInterceptor implements HttpInterceptor {
                 ...employee,
                 status: employee.isActive ? 'Active' : 'Inactive'
             };
+        }
+
+        // Department functions
+        function getDepartments() {
+            if (!isAuthenticated()) return unauthorized();
+            return ok(departments);
+        }
+
+        function getDepartmentById() {
+            if (!isAuthenticated()) return unauthorized();
+            const department = departments.find(x => x.id == idFromUrl());
+            return ok(department);
+        }
+
+        function createDepartment() {
+            if (!isAuthenticated()) return unauthorized();
+            const department = body;
+            department.id = newDepartmentId();
+            departments.push(department);
+            localStorage.setItem(departmentsKey, JSON.stringify(departments));
+            return ok(department);
+        }
+
+        function updateDepartment() {
+            if (!isAuthenticated()) return unauthorized();
+            const department = departments.find(x => x.id == idFromUrl());
+            if (!department) return error('Department not found');
+            Object.assign(department, body);
+            localStorage.setItem(departmentsKey, JSON.stringify(departments));
+            return ok(department);
+        }
+
+        function deleteDepartment() {
+            if (!isAuthenticated()) return unauthorized();
+            departments = departments.filter(x => x.id != idFromUrl());
+            localStorage.setItem(departmentsKey, JSON.stringify(departments));
+            return ok();
+        }
+
+        function newDepartmentId() {
+            return (Date.now() + Math.random()).toString();
         }
 
         // helper functions

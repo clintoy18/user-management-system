@@ -1,29 +1,27 @@
 <div class="card">
-    <div class="card-header">Departments</div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Employee Count</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let dept of departments">
-                        <td>{{ dept.name }}</td>
-                        <td>{{ dept.description }}</td>
-                        <td>{{ dept.employeeCount }}</td>
-                        <td>
-                            <button class="btn btn-sm btn-primary me-1" (click)="edit(dept.id)">Edit</button>
-                            <button *ngIf ="account()?.role === 'Admin'" class="btn btn-sm btn-danger" (click)="delete(dept.id)">Delete</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <button *ngIf="account()?.role === 'Admin'" class="btn btn-primary float-end" (click)="add()">Add Department</button>
+    <div class="card-header">DEPARTMENTS</div>
+    <div class="card-body p-0">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let department of departments">
+                    <td>{{department.name}}</td>
+                    <td>{{department.description}}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm me-1" (click)="edit(department.id)">Edit</button>
+                        <button class="btn btn-danger btn-sm" (click)="delete(department.id)">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer text-end">
+        <button class="btn btn-primary" (click)="add()">Add Department</button>
     </div>
 </div>

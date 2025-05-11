@@ -10,6 +10,7 @@ import { OverviewComponent } from './overview.component';
 const accountsModule = () => import('./accounts/accounts.module').then(x => x.AccountsModule);
 const requestsModule = () => import('./requests/requests.module').then(x => x.RequestsModule);
 const employeesModule = () => import('./employees/employees.module').then(x => x.EmployeesModule);
+const departmentsModule = () => import('./departments/departments.module').then(x => x.DepartmentsModule);
 
 
 const routes: Routes = [
@@ -23,7 +24,7 @@ const routes: Routes = [
             { path: 'accounts', loadChildren: accountsModule, canActivate: [AuthGuard], data: { roles: [Role.Admin] } },
             { path: 'requests', loadChildren: requestsModule, canActivate: [AuthGuard], data: { roles: [Role.Admin] } },
             { path: 'employees', loadChildren: employeesModule, canActivate: [AuthGuard], data: { roles: [Role.Admin] } },
-
+            { path: 'departments', loadChildren: departmentsModule, canActivate: [AuthGuard], data: { roles: [Role.Admin] } },
         ]
     }
 ];
