@@ -7,8 +7,12 @@ import { AlertService } from '@app/_services';
 import { Role } from '@app/_models';
 
 // array in local storage for accounts
-const accountsKey = 'angular-10-signup-verification-boilerplate-accounts';
+const accountsKey = 'angular-10-signup-verification-boilerplate-accountss';
 let accounts = JSON.parse(localStorage.getItem(accountsKey)) || [];
+
+// array in local storage for requests
+const requestsKey = 'angular-10-signup-verification-boilerplate-requests';
+let requests = JSON.parse(localStorage.getItem(requestsKey)) || [];
 
 @Injectable()
 export class FakeBackendInterceptor implements HttpInterceptor {
@@ -50,6 +54,20 @@ export class FakeBackendInterceptor implements HttpInterceptor {
                         return deactivateAccount();  
                 case url.endsWith('/accounts/activate') && method === 'PUT':
                     return activateAccount();        
+                case url.endsWith('/requests') && method === 'GET':
+                    return getRequests();
+                case url.match(/\/requests\/\d+$/) && method === 'GET':
+                    return getRequestById();
+                case url.endsWith('/requests') && method === 'POST':
+                    return createRequest();
+                case url.match(/\/requests\/\d+$/) && method === 'PUT':
+                    return updateRequest();
+                case url.match(/\/requests\/\d+$/) && method === 'DELETE':
+                    return deleteRequest();
+                case url.match(/\/requests\/\d+\/approve$/) && method === 'PUT':
+                    return approveRequest();
+                case url.match(/\/requests\/\d+\/reject$/) && method === 'PUT':
+                    return rejectRequest();
                 default:
                     // pass through any requests not handled above
                     return next.handle(request);
@@ -349,6 +367,84 @@ export class FakeBackendInterceptor implements HttpInterceptor {
         //     localStorage.setItem(accountsKey, JSON.stringify(accounts));
         //     return ok();
         // }
+
+        // request functions
+        function getRequests() {
+            if (!isAuthenticated()) return unauthorized();
+            return ok(requests);
+        }
+
+        function getRequestById() {
+            if (!isAuthenticated()) return unauthorized();
+            const request = requests.find(x => x.id === idFromUrl());
+            return ok(request);
+        }
+
+        function createRequest() {
+            if (!isAuthenticated()) return unauthorized();
+            const request = body;
+            request.id = newRequestId();
+            request.status = 'pending';
+            request.createdAt = new Date().toISOString();
+            request.updatedAt = new Date().toISOString();
+            request.userId = currentAccount().id;
+            request.userName = currentAccount().firstName + ' ' + currentAccount().lastName;
+            requests.push(request);
+            localStorage.setItem(requestsKey, JSON.stringify(requests));
+            return ok(request);
+        }
+
+        function updateRequest() {
+            if (!isAuthenticated()) return unauthorized();
+            const request = requests.find(x => x.id === idFromUrl());
+            if (!request) return error('Request not found');
+            
+            // only allow updating title and description
+            request.title = body.title;
+            request.description = body.description;
+            request.updatedAt = new Date().toISOString();
+            localStorage.setItem(requestsKey, JSON.stringify(requests));
+            return ok(request);
+        }
+
+        function deleteRequest() {
+            if (!isAuthenticated()) return unauthorized();
+            if (!isAuthorized(Role.Admin)) return unauthorized();
+            
+            requests = requests.filter(x => x.id !== idFromUrl());
+            localStorage.setItem(requestsKey, JSON.stringify(requests));
+            return ok();
+        }
+
+        function approveRequest() {
+            if (!isAuthenticated()) return unauthorized();
+            if (!isAuthorized(Role.Admin)) return unauthorized();
+            
+            const request = requests.find(x => x.id === idFromUrl());
+            if (!request) return error('Request not found');
+            
+            request.status = 'approved';
+            request.updatedAt = new Date().toISOString();
+            localStorage.setItem(requestsKey, JSON.stringify(requests));
+            return ok(request);
+        }
+
+        function rejectRequest() {
+            if (!isAuthenticated()) return unauthorized();
+            if (!isAuthorized(Role.Admin)) return unauthorized();
+            
+            const request = requests.find(x => x.id === idFromUrl());
+            if (!request) return error('Request not found');
+            
+            request.status = 'rejected';
+            request.updatedAt = new Date().toISOString();
+            localStorage.setItem(requestsKey, JSON.stringify(requests));
+            return ok(request);
+        }
+
+        function newRequestId() {
+            return requests.length ? Math.max(...requests.map(x => x.id)) + 1 : 1;
+        }
 
         // helper functions
 
