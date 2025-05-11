@@ -14,6 +14,10 @@ let accounts = JSON.parse(localStorage.getItem(accountsKey)) || [];
 const requestsKey = 'angular-10-signup-verification-boilerplate-requests';
 let requests = JSON.parse(localStorage.getItem(requestsKey)) || [];
 
+// array in local storage for employees
+const employeesKey = 'angular-10-signup-verification-boilerplate-employees';
+let employees = JSON.parse(localStorage.getItem(employeesKey)) || [];
+
 @Injectable()
 export class FakeBackendInterceptor implements HttpInterceptor {
     constructor(private alertService: AlertService) { }
@@ -68,6 +72,16 @@ export class FakeBackendInterceptor implements HttpInterceptor {
                     return approveRequest();
                 case url.match(/\/requests\/\d+\/reject$/) && method === 'PUT':
                     return rejectRequest();
+                case url.endsWith('/employees') && method === 'GET':
+                    return getEmployees();
+                case url.match(/\/employees\/\w+$/) && method === 'GET':
+                    return getEmployeeById();
+                case url.endsWith('/employees') && method === 'POST':
+                    return createEmployee();
+                case url.match(/\/employees\/\w+$/) && method === 'PUT':
+                    return updateEmployee();
+                case url.match(/\/employees\/\w+$/) && method === 'DELETE':
+                    return deleteEmployee();
                 default:
                     // pass through any requests not handled above
                     return next.handle(request);
@@ -454,6 +468,57 @@ export class FakeBackendInterceptor implements HttpInterceptor {
             return requests.length ? Math.max(...requests.map(x => x.id)) + 1 : 1;
         }
 
+        // Employee functions
+        function getEmployees() {
+            if (!isAuthenticated()) return unauthorized();
+            return ok(employees.map(mapEmployeeToFrontend));
+        }
+
+        function getEmployeeById() {
+            if (!isAuthenticated()) return unauthorized();
+            const employee = employees.find(x => x.id == idFromUrl());
+            return ok(mapEmployeeToFrontend(employee));
+        }
+
+        function createEmployee() {
+            if (!isAuthenticated()) return unauthorized();
+            const employee = body;
+            employee.id = newEmployeeId();
+            employee.isActive = employee.status === 'Active';
+            employees.push(employee);
+            localStorage.setItem(employeesKey, JSON.stringify(employees));
+            return ok(mapEmployeeToFrontend(employee));
+        }
+
+        function updateEmployee() {
+            if (!isAuthenticated()) return unauthorized();
+            const employee = employees.find(x => x.id == idFromUrl());
+            if (!employee) return error('Employee not found');
+            Object.assign(employee, body);
+            employee.isActive = employee.status === 'Active';
+            localStorage.setItem(employeesKey, JSON.stringify(employees));
+            return ok(mapEmployeeToFrontend(employee));
+        }
+
+        function deleteEmployee() {
+            if (!isAuthenticated()) return unauthorized();
+            employees = employees.filter(x => x.id != idFromUrl());
+            localStorage.setItem(employeesKey, JSON.stringify(employees));
+            return ok();
+        }
+
+        function newEmployeeId() {
+            return (Date.now() + Math.random()).toString();
+        }
+
+        function mapEmployeeToFrontend(employee) {
+            if (!employee) return employee;
+            return {
+                ...employee,
+                status: employee.isActive ? 'Active' : 'Inactive'
+            };
+        }
+
         // helper functions
 
         function ok(body?) {
@@ -489,7 +554,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
         function idFromUrl() {
             const urlParts = url.split('/');
-            return parseInt(urlParts[urlParts.length - 1]);
+            return urlParts[urlParts.length - 1];
         }
 
         function newAccountId() {

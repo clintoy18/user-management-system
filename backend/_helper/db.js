@@ -7,22 +7,47 @@ module.exports = db = {};
 initialize();
 
 async function initialize() {
-    //create db if doesn't already exist
-    const {host, port, user, password, database} = config.database;
-    const connection = await mysql.createConnection({host, port, user, password});
+    // Create the database if it doesn't already exist
+    const { host, port, user, password, database } = config.database;
+    const connection = await mysql.createConnection({ host, port, user, password });
+    
+    // Create the database if it doesn't exist
     await connection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\`;`);
 
-    // connect to db
+    // Close the connection after database creation
+    await connection.end();
+
+    // Now connect to the database
     const sequelize = new Sequelize(database, user, password, { dialect: 'mysql' });
 
-    // init models and add them to the exported db object
-    db.Account = require ('../accounts/account.model')(sequelize);
+    // Initialize models and add them to the exported db object
+    db.Account = require('../accounts/account.model')(sequelize);
     db.RefreshToken = require('../accounts/refresh-token.model')(sequelize);
+    db.Department = require('../departments/department.model')(sequelize);
+    db.Employee = require('../employees/employee.model')(sequelize);
+    db.Workflow = require('../workflows/workflows.model')(sequelize);
+    db.Request = require('../requests/request.model')(sequelize);
+    db.RequestItem = require('../requests/request-item.model')(sequelize);
 
-    // define relationships
+    // Define relationships between models
     db.Account.hasMany(db.RefreshToken, { onDelete: 'CASCADE' });
+    db.Account.hasOne(db.Employee, { foreignKey: 'accountId', onDelete: 'CASCADE' });
+    db.Employee.belongsTo(db.Account, { foreignKey: 'accountId' });
+
+    db.Department.hasMany(db.Employee, { foreignKey: 'departmentId'});
+    db.Employee.belongsTo(db.Department, { foreignKey: 'departmentId', as: 'department' });
+
+    db.Workflow.belongsTo(db.Employee, { foreignKey: 'employeeId', as: 'employee' });
+    db.Employee.hasMany(db.Workflow, { foreignKey: 'employeeId', as: 'workflows' });
+
+    db.Request.hasMany(db.RequestItem,{ foreignKey: 'requestId', as: 'items'});
+    db.RequestItem.belongsTo(db.Request, {foreignKey : 'requestId' ,as:  'request'} );
+
+
+
     db.RefreshToken.belongsTo(db.Account);
 
-    // sync all models with database
-    await sequelize.sync ({ alter : true});
+    // Sync all models with the database (alter tables to match model changes)
+    await sequelize.sync({ alter: true });
+    console.log("Database synced successfully.");
 }
