@@ -55,6 +55,8 @@ export class AccountService {
     refreshToken() {
         return this.http.post<any>(`${baseUrl}/refresh-token`, {}, { withCredentials: true })
             .pipe(map(account => {
+                // Store the account (with jwtToken) in local storage
+                localStorage.setItem('account', JSON.stringify(account));
                 this.accountSubject.next(account);
                 this.startRefreshTokenTimer();
                 return account;
@@ -135,7 +137,14 @@ export class AccountService {
         // set a timeout to refresh the token a minute before it expires
         const expires = new Date(jwtToken.exp * 1000);
         const timeout = expires.getTime() - Date.now() - (60 * 1000);
-        this.refreshTokenTimeout = setTimeout(() => this.refreshToken().subscribe(), timeout);
+        this.refreshTokenTimeout = setTimeout(() => {
+            this.refreshToken().subscribe({
+                error: () => {
+                    // If refresh token fails, logout
+                    this.logout();
+                }
+            });
+        }, timeout);
     }
 
     private stopRefreshTokenTimer() {

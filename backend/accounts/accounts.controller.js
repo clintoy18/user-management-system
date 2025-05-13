@@ -50,12 +50,22 @@ function refreshToken(req, res, next) {
     const token = req.cookies.refreshToken;
     const ipAddress = req.ip;
 
+    if (!token) {
+        return res.status(400).json({ message: 'Refresh token is required' });
+    }
+
     accountService.refreshToken({ token, ipAddress })
         .then(({ refreshToken, ...account }) => {
             setTokenCookie(res, refreshToken);
             res.json(account);
         })
-        .catch(next);
+        .catch(err => {
+            console.error('Refresh token error:', err);
+            if (err === 'Invalid token') {
+                return res.status(401).json({ message: 'Invalid refresh token' });
+            }
+            next(err);
+        });
 }
 
 function revokeTokenSchema(req, res, next) {
