@@ -28,7 +28,7 @@ module.exports = {
 async function authenticate({ email, password, ipAddress }) {
     const account = await db.Account.scope('withHash').findOne({ where: { email } });
 
-    if (!account || !account.isVerified || !(await bcrypt.compare(password, account.passwordHash))) {
+    if (!account || !(await bcrypt.compare(password, account.passwordHash))) {
         throw 'Email or password is incorrect';
     }
     
@@ -95,7 +95,7 @@ async function register(params, origin) {
     // first registered account is an admin
     const isFirstAccount = (await db.Account.count()) === 0;
     account.role = isFirstAccount ? Role.Admin : Role.User;
-    account.verificationToken = randomTokenString();
+    account.verified = Date.now(); // Automatically verify the account
 
     // hash password
     account.passwordHash = await hash(params.password);

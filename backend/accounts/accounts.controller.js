@@ -11,7 +11,6 @@ router.post('/authenticate', authenticateSchema, authenticate);
 router.post('/refresh-token', refreshToken);
 router.post('/revoke-token', authorize(), revokeTokenSchema, revokeToken);
 router.post('/register', registerSchema, register);
-router.post('/verify-email', verifyEmailSchema, verifyEmail);
 router.post('/forgot-password', forgotPasswordSchema, forgotPassword);
 router.post('/validate-reset-token', validateResetTokenSchema, validateResetToken);
 router.post('/reset-password', resetPasswordSchema, resetPassword);
@@ -98,20 +97,7 @@ function registerSchema(req, res, next) {
 
 function register(req, res, next) {
     accountService.register(req.body, req.get('origin'))
-        .then(() => res.json({ message: 'Registration successful, please check your email for verification instructions' }))
-        .catch(next);
-}
-
-function verifyEmailSchema(req, res, next) {
-    const schema = Joi.object({
-        token: Joi.string().required()
-    });
-    validateRequest(req, next, schema);
-}
-
-function verifyEmail(req, res, next) {
-    accountService.verifyEmail(req.body)
-        .then(() => res.json({ message: 'Verification successful, you can now login' }))
+        .then(() => res.json({ message: 'Registration successful, you can now login' }))
         .catch(next);
 }
 
