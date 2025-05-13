@@ -7,7 +7,7 @@ import { AlertService } from '@app/_services';
 import { Role } from '@app/_models';
 
 // array in local storage for accounts
-const accountsKey = 'angular-10-signup-verification-boilerplate-accountss';
+const accountsKey = 'angular-10-signup-verification-boilerplate-accounts';
 let accounts = JSON.parse(localStorage.getItem(accountsKey)) || [];
 
 // array in local storage for requests
