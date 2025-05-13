@@ -18,7 +18,8 @@ export class AccountService {
         private router: Router,
         private http: HttpClient
     ) {
-        this.accountSubject = new BehaviorSubject<Account>(null);
+        // Load account from local storage if available
+        this.accountSubject = new BehaviorSubject<Account>(JSON.parse(localStorage.getItem('account')));
         this.account = this.accountSubject.asObservable();
     }
 
@@ -29,6 +30,8 @@ export class AccountService {
     login(email: string, password: string) {
         return this.http.post<any>(`${baseUrl}/authenticate`, { email, password }, { withCredentials: true })
             .pipe(map(account => {
+                // Store the account (with jwtToken) in local storage
+                localStorage.setItem('account', JSON.stringify(account));
                 this.accountSubject.next(account);
                 this.startRefreshTokenTimer();
                 return account;
