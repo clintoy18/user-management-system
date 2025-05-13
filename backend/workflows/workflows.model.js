@@ -29,7 +29,7 @@ function model(sequelize) {
             allowNull: false,
             defaultValue: 'pending',
             validate: {
-                isIn: [['pending', 'in_progress', 'completed', 'rejected']]
+                isIn: [['pending', 'approved', 'rejected']]
             }
         },
         startDate: {

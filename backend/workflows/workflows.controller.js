@@ -36,7 +36,7 @@ const updateSchema = (req, res, next) => {
 
 const updateStatusSchema = (req, res, next) => {
     const schema = Joi.object({
-        status: Joi.string().valid('pending', 'in_progress', 'completed', 'rejected').required()
+        status: Joi.string().valid('pending', 'approved','rejected').required()
     });
     validateRequest(req, next, schema);
 };

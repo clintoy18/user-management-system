@@ -41,9 +41,11 @@ async function initialize() {
     db.Account.hasOne(db.Employee, { foreignKey: 'accountId', onDelete: 'CASCADE' });
     db.Employee.belongsTo(db.Account, { foreignKey: 'accountId' });
 
+    //employee to department
     db.Department.hasMany(db.Employee, { foreignKey: 'departmentId'});
     db.Employee.belongsTo(db.Department, { foreignKey: 'departmentId', as: 'department' });
 
+    //Employee to workflow
     db.Workflow.belongsTo(db.Employee, { foreignKey: 'employeeId', as: 'employee' });
     db.Employee.hasMany(db.Workflow, { foreignKey: 'employeeId', as: 'workflows' });
 
@@ -52,20 +54,12 @@ async function initialize() {
     db.Employee.hasMany(db.Request, { foreignKey: 'employeeId', as: 'Requests' });
     
     // RequestItem associations
-    db.Request.hasMany(db.RequestItem, { 
-        foreignKey: 'requestId', 
-        as: 'RequestItems',
-        onDelete: 'CASCADE'
-    });
-    db.RequestItem.belongsTo(db.Request, { 
-        foreignKey: 'requestId', 
-        as: 'Request'
-    });
+    db.Request.hasMany(db.RequestItem, {  foreignKey: 'requestId',  as: 'RequestItems',onDelete: 'CASCADE' });
+    db.RequestItem.belongsTo(db.Request, { foreignKey: 'requestId', as: 'Request' });
 
     db.RefreshToken.belongsTo(db.Account);
 
-    // Drop the Workflows table if it exists
-    await sequelize.query('DROP TABLE IF EXISTS Workflows;');
+  
 
     // Sync all models with the database (alter tables to match model changes)
     await sequelize.sync({ alter: true });
