@@ -12,7 +12,7 @@ async function initialize() {
         const { host, port, user, password, database } = config.database;
         console.log('Attempting to connect to database...', { host, port, database, user, password });
         
-        const connection = await mysql.createConnection({ host, port, user, password });
+        const connection = await mysql.createConnection({ host, port, user});
         console.log('Initial connection successful');
         
         // Create the database if it doesn't exist
