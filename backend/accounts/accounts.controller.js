@@ -70,7 +70,9 @@ function revokeToken(req, res, next) {
     const token = req.body.token || req.cookies.refreshToken;
     const ipAddress = req.ip;
 
-    if (!token) return res.status(400).json({ message: 'Token is required' });
+    if (!token) {
+        return res.status(400).json({ message: 'Token is required' });
+    }
 
     // users can revoke their own tokens and admins can revoke any tokens
     if (!req.user.ownsToken(token) && req.user.role !== Role.Admin) {
