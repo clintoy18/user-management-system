@@ -225,34 +225,31 @@ async function update(id, params) {
 }
 
 async function _delete(id) {
-    const request = await getRequest(id);
-    request.isActive = false;
-    await request.save();
+    await db.Request.destroy({ where: { id } });
 }
 
 async function approveRequest(id) {
-    const request = await getRequest(id);
-    
+    const request = await db.Request.findByPk(id);
+    if (!request) throw new Error('Request not found');
     if (request.status === 'Approved') {
         throw new Error('Request is already approved');
     }
-    
     request.status = 'Approved';
     await request.save();
-    return getRequest(id);
+    return await getRequest(id);
 }
 
 async function rejectRequest(id) {
-    const request = await getRequest(id);
-    
+    const request = await db.Request.findByPk(id);
+    if (!request) throw new Error('Request not found');
     if (request.status === 'Rejected') {
         throw new Error('Request is already rejected');
     }
-    
     request.status = 'Rejected';
     await request.save();
-    return getRequest(id);
+    return await getRequest(id);
 }
+
 
 async function getRequest(id, transaction = null) {
     const options = {
