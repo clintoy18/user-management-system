@@ -12,7 +12,7 @@ function model(sequelize) {
       type: DataTypes.INTEGER,
       unique: true,
       references: {
-        model: 'Accounts',
+        model: 'accounts',
         key: 'id'
       },
       allowNull: false
@@ -20,7 +20,7 @@ function model(sequelize) {
     departmentId: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'Departments',
+        model: 'departments',
         key: 'id'
       },
       allowNull: true
