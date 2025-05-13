@@ -1,4 +1,4 @@
-const config = require('config.json');
+const config = require('../config');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
@@ -35,9 +35,16 @@ async function authenticate({ email, password, ipAddress }) {
     if(!account.isActive) {
         throw 'Account is disabled';
     }
+
+    console.log('Authentication successful for:', email);
+    console.log('Using JWT secret:', config.secret);
+    
     // Authentication successful, so generate JWT and refresh tokens
     const jwtToken = generateJwtToken(account);
+    console.log('Generated JWT token:', jwtToken);
+    
     const refreshToken = generateRefreshToken(account, ipAddress);
+    console.log('Generated refresh token:', refreshToken.token);
 
     // Save refresh token
     await refreshToken.save();
@@ -226,8 +233,13 @@ async function hash(password) {
 }
 
 function generateJwtToken(account) {
+    console.log('Generating JWT token for account:', account.id);
+    console.log('Using secret:', config.secret);
+    
     // create a jwt token containing the account id that expires in 15 minutes
-    return jwt.sign({ sub: account.id, id: account.id }, config.secret, { expiresIn: '15m' });
+    const token = jwt.sign({ sub: account.id, id: account.id }, config.secret, { expiresIn: '15m' });
+    console.log('Generated token:', token);
+    return token;
 }
 
 function generateRefreshToken(account, ipAddress) {
