@@ -21,7 +21,8 @@ function model(sequelize) {
         updated: { type: DataTypes.DATE },
         isVerified: {
             type: DataTypes.VIRTUAL,
-            get() { return !!(this.verified || this.passwordReset); }
+            get() { return true; }
+
         }
     };
 
