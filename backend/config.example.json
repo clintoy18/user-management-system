@@ -1,20 +1,20 @@
 {
-
+  "_note": "For production, use environment variables instead of this file.",
   "database": {
     "host": "localhost",
     "port": 3306,
     "user": "root",
-    "password": "",
-    "database": "node-mysql-signup-verification-apistart-final"
+    "password": "password",
+    "database": "your-db-name"
   },
   "secret": "your-jwt-secret",
-  "emailFrom": "your-email@example.com",
+  "emailFrom": "info@example.com",
   "smtpOptions": {
     "host": "smtp.example.com",
     "port": 587,
     "auth": {
       "user": "your-smtp-user",
-      "pass": "your-smtp-password"
+      "pass": "your-smtp-pass"
     }
   }
-}
+} 
