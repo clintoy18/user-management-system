@@ -13,7 +13,7 @@ function model(sequelize) {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'Employees',
+                model: 'employees',
                 key: 'id'
             }
         },
@@ -62,7 +62,8 @@ function model(sequelize) {
     };
 
     const options = {
-        timestamps: true
+        timestamps: true,
+        tableName: 'workflows'
     };
 
     return sequelize.define('workflow', attributes, options);
