@@ -34,12 +34,12 @@ export class AddEditComponent implements OnInit {
         this.isAddMode = !this.id;
 
         this.form = this.formBuilder.group({
-            employeeId: [{ value: '', disabled: true }, Validators.required],
-            account: ['', Validators.required],
-            position: ['', Validators.required],
-            department: ['', Validators.required],
-            hireDate: ['', Validators.required],
-            status: ['', Validators.required]
+            employeeId: [{ value: '', disabled: true }],
+            account: [''],
+            position: [''],
+            department: [''],
+            hireDate: [''],
+            status: ['']
         });
 
         this.accountService.getAll().subscribe(accounts => this.accounts = accounts);
@@ -47,7 +47,16 @@ export class AddEditComponent implements OnInit {
 
         if (!this.isAddMode) {
             this.employeeService.getById(this.id)
-                .subscribe(x => this.form.patchValue(x));
+                .subscribe(employee => {
+                    this.form.patchValue({
+                        employeeId: employee.employeeId || '',
+                        account: employee.account || '',
+                        position: employee.position || '',
+                        department: employee.department || '',
+                        hireDate: employee.hireDate ? employee.hireDate.split('T')[0] : '',
+                        status: employee.status || ''
+                    });
+                });
         } else {
             this.employeeService.getAll().subscribe(employees => {
                 let max = 0;
@@ -99,7 +108,7 @@ export class AddEditComponent implements OnInit {
         this.employeeService.create(formValue)
             .subscribe({
                 next: () => {
-                    this.router.navigate(['../'], { relativeTo: this.route });
+                    this.router.navigate(['/admin/employees'], { relativeTo: this.route });
                 },
                 error: error => {
                     this.loading = false;
@@ -111,7 +120,7 @@ export class AddEditComponent implements OnInit {
         this.employeeService.update(this.id, formValue)
             .subscribe({
                 next: () => {
-                    this.router.navigate(['../'], { relativeTo: this.route });
+                    this.router.navigate(['/admin/employees'], { relativeTo: this.route });
                 },
                 error: error => {
                     this.loading = false;
