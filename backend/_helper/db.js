@@ -25,14 +25,7 @@ async function initialize() {
         // Now connect to the database with additional configuration
         const sequelize = new Sequelize(database, user, password, { 
             host,
-            port,
-            dialect: 'mysql',
-            dialectOptions: {
-                dateStrings: true,
-                typeCast: true
-            },
-            timezone: '+00:00', // Set timezone to UTC
-            logging: console.log // Enable logging
+            dialect: 'mysql'
         });
 
         // Test the connection
