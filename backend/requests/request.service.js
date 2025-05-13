@@ -1,4 +1,4 @@
-const config = require('../config');
+const config = require('config.json');
 const { Op } = require('sequelize');
 const db = require('_helper/db');
 

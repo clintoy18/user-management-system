@@ -4,28 +4,23 @@ module.exports = model;
 
 function model(sequelize) {
   const attributes = {
-    description: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    quantity: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 1
-    },
-    requestId: {
+    type: { type: DataTypes.ENUM('equipment','leave','resource','other'), allowNull: false },
+    status: { type: DataTypes.ENUM('Pending', 'Approved', 'Rejected'), defaultValue: 'Pending' },
+    isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
+    description: { type: DataTypes.STRING, allowNull: false },
+    employeeId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'requests',
+        model: 'employees',
         key: 'id'
       }
     }
   };
-
+  
   const options = {
     timestamps: true
   };
 
-  return sequelize.define('requestItem', attributes, options);
+  return sequelize.define('request', attributes, options);
 }
