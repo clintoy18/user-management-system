@@ -64,7 +64,7 @@ async function initialize() {
         db.RefreshToken.belongsTo(db.Account);
 
         // Sync all models with the database (alter tables to match model changes)
-        await sequelize.sync({ force: true });
+        await sequelize.sync({ alter: true });
         console.log("Database synced successfully.");
     } catch (error) {
         console.error('Unable to connect to the database:', error);
