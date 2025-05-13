@@ -106,7 +106,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
         function authenticate() {
             const { email, password } = body;
-            const account = accounts.find(x => x.email === email && x.password === password );
+            const account = accounts.find(x => x.email === email && x.password === password && x.isVerified);
         
             if (!account) return error('Email or password is incorrect');
             if (!account.isActive) return error('Account is deactivated');
@@ -218,7 +218,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
             }
             account.dateCreated = new Date().toISOString();
             account.verificationToken = new Date().getTime().toString();
-            account.isVerified = false;
+            account.isVerified = true;
             account.isActive = true; // New property added to ensure account is active by default
             account.refreshTokens = [];
             delete account.confirmPassword;
