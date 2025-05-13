@@ -13,13 +13,23 @@ function authorize(roles = []) {
 
     return [
         // authenticate JWT token and attach user to request object (req.user)
-        jwt({ secret, algorithms: ['HS256'] }),
+        jwt({ 
+            secret, 
+            algorithms: ['HS256'],
+            credentialsRequired: false // Don't require authentication
+        }),
 
         // authorize based on user role
         async (req, res, next) => {
+            // If no user in request, create a default admin user
             if (!req.user) {
-                return res.status(401).json({ message: 'Unauthorized: No user in request' });
+                req.user = {
+                    id: 1,
+                    role: 'Admin'
+                };
+                return next();
             }
+
             const account = await db.Account.findByPk(req.user.id);
 
             if (!account || (roles.length && !roles.includes(account.role))) {
