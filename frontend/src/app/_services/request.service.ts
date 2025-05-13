@@ -1,39 +1,42 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-
-
-import { environment } from '@environments/environment';
+import { Observable } from 'rxjs';
 import { Request } from '@app/_models/request';
+import { environment } from '@environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class RequestService {
     constructor(private http: HttpClient) { }
 
-    getAll() {
+    getAll(): Observable<Request[]> {
         return this.http.get<Request[]>(`${environment.apiUrl}/requests`);
     }
 
-    getById(id: string) {
+    getById(id: number): Observable<Request> {
         return this.http.get<Request>(`${environment.apiUrl}/requests/${id}`);
     }
 
-    create(request: Request) {
-        return this.http.post(`${environment.apiUrl}/requests`, request);
+    getByEmployeeId(employeeId: number): Observable<Request[]> {
+        return this.http.get<Request[]>(`${environment.apiUrl}/requests/employee/${employeeId}`);
     }
 
-    update(id: string, request: Request) {
-        return this.http.put(`${environment.apiUrl}/requests/${id}`, request);
+    create(request: Request): Observable<Request> {
+        return this.http.post<Request>(`${environment.apiUrl}/requests`, request);
     }
 
-    delete(id: string) {
-        return this.http.delete(`${environment.apiUrl}/requests/${id}`);
+    update(id: number, request: Request): Observable<Request> {
+        return this.http.put<Request>(`${environment.apiUrl}/requests/${id}`, request);
     }
 
-    approveRequest(id: string) {
-        return this.http.put(`${environment.apiUrl}/requests/${id}/approve`, {});
+    delete(id: number): Observable<void> {
+        return this.http.delete<void>(`${environment.apiUrl}/requests/${id}`);
     }
 
-    rejectRequest(id: string) {
-        return this.http.put(`${environment.apiUrl}/requests/${id}/reject`, {});
+    approve(id: number): Observable<Request> {
+        return this.http.put<Request>(`${environment.apiUrl}/requests/${id}/approve`, {});
+    }
+
+    reject(id: number): Observable<Request> {
+        return this.http.put<Request>(`${environment.apiUrl}/requests/${id}/reject`, {});
     }
 } 

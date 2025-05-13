@@ -1,25 +1,33 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs/operators';
-import { RequestService } from '../../_services/request.service';
-import { Request } from '../../_models/request';
+import { RequestService } from '@app/_services/request.service';
+import { Request, RequestItem } from '@app/_models/request';
+import { AccountService } from '@app/_services/account.service';
+import { EmployeeService } from '@app/_services/employee.service';
+import { Employee } from '@app/_models/employee';
 
 @Component({
-    templateUrl: 'add-edit.component.html'
+    templateUrl: 'add-edit.component.html',
+    styleUrls: ['./add-edit.component.css']
 })
 export class AddEditComponent implements OnInit {
     form: FormGroup;
-    id: string;
+    id: number;
     isAddMode: boolean;
     loading = false;
     submitted = false;
+    requestTypes = ['equipment', 'leave', 'resource', 'other'];
+    employees: Employee[] = [];
 
     constructor(
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
         private router: Router,
-        private requestService: RequestService
+        private requestService: RequestService,
+        private accountService: AccountService,
+        private employeeService: EmployeeService
     ) { }
 
     ngOnInit() {
@@ -27,19 +35,47 @@ export class AddEditComponent implements OnInit {
         this.isAddMode = !this.id;
 
         this.form = this.formBuilder.group({
-            title: ['', Validators.required],
-            description: ['', Validators.required]
+            type: ['', Validators.required],
+            description: ['', Validators.required],
+            employeeId: ['', Validators.required],
+            items: this.formBuilder.array([])
+        });
+
+        this.employeeService.getAll().subscribe(employees => {
+            this.employees = employees;
         });
 
         if (!this.isAddMode) {
+            this.loading = true;
             this.requestService.getById(this.id)
                 .pipe(first())
-                .subscribe(x => this.form.patchValue(x));
+                .subscribe(request => {
+                    this.form.patchValue(request);
+                    if (request.items) {
+                        request.items.forEach(item => {
+                            this.addItem(item);
+                        });
+                    }
+                    this.loading = false;
+                });
         }
     }
 
-    // convenience getter for easy access to form fields
+    // convenience getters for easy access to form fields
     get f() { return this.form.controls; }
+    get items() { return this.form.get('items') as FormArray; }
+
+    addItem(item?: RequestItem) {
+        const itemForm = this.formBuilder.group({
+            description: [item?.description || '', Validators.required],
+            quantity: [item?.quantity || 1, [Validators.required, Validators.min(1)]]
+        });
+        this.items.push(itemForm);
+    }
+
+    removeItem(index: number) {
+        this.items.removeAt(index);
+    }
 
     onSubmit() {
         this.submitted = true;
@@ -58,7 +94,10 @@ export class AddEditComponent implements OnInit {
     }
 
     private createRequest() {
-        this.requestService.create(this.form.value)
+        const requestPayload = {
+            ...this.form.value
+        };
+        this.requestService.create(requestPayload)
             .pipe(first())
             .subscribe({
                 next: () => {

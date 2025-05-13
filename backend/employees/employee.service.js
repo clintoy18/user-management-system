@@ -111,24 +111,52 @@ async function _delete(id){
 }
 
 async function getEmployee(id){
-    const employee = await db.Employee.findByPk(id);
+    // Try to find by primary key first
+    let employee = await db.Employee.findByPk(id);
+    
+    // If not found by primary key, try to find by employeeId
+    if (!employee) {
+        employee = await db.Employee.findOne({ where: { employeeId: id } });
+    }
+    
     if (!employee) throw 'Employee not found';
     return employee;
 }
 
 async function transferEmployee(employeeId, newDepartmentId) {
+    console.log('Starting transfer:', { employeeId, newDepartmentId });
+    
     // Get the employee
     const employee = await getEmployee(employeeId);
+    console.log('Found employee:', employee);
     
     // Validate the new department exists
     const department = await db.Department.findByPk(newDepartmentId);
-    if (!department) throw 'Department not found';
+    if (!department) {
+        console.log('Department not found:', newDepartmentId);
+        throw 'Department not found';
+    }
+    console.log('Found department:', department.name);
+    
+    // Check if trying to transfer to the same department
+    if (employee.departmentId === newDepartmentId) {
+        console.log('Same department transfer attempt');
+        throw 'Cannot transfer to the same department';
+    }
     
     // Update the employee's department
     employee.departmentId = newDepartmentId;
     await employee.save();
+    console.log('Employee updated with new department');
     
-    return employeeDetails(employee);
+    // Get the updated employee details
+    const updatedEmployee = await employeeDetails(employee);
+    console.log('Updated employee details:', updatedEmployee);
+    
+    // Add a success message
+    updatedEmployee.message = 'Employee transferred successfully';
+    
+    return updatedEmployee;
 }
 
 

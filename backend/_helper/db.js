@@ -40,10 +40,20 @@ async function initialize() {
     db.Workflow.belongsTo(db.Employee, { foreignKey: 'employeeId', as: 'employee' });
     db.Employee.hasMany(db.Workflow, { foreignKey: 'employeeId', as: 'workflows' });
 
-    db.Request.hasMany(db.RequestItem,{ foreignKey: 'requestId', as: 'items'});
-    db.RequestItem.belongsTo(db.Request, {foreignKey : 'requestId' ,as:  'request'} );
-
-
+    // Request associations
+    db.Request.belongsTo(db.Employee, { foreignKey: 'employeeId', as: 'Employee' });
+    db.Employee.hasMany(db.Request, { foreignKey: 'employeeId', as: 'Requests' });
+    
+    // RequestItem associations
+    db.Request.hasMany(db.RequestItem, { 
+        foreignKey: 'requestId', 
+        as: 'RequestItems',
+        onDelete: 'CASCADE'
+    });
+    db.RequestItem.belongsTo(db.Request, { 
+        foreignKey: 'requestId', 
+        as: 'Request'
+    });
 
     db.RefreshToken.belongsTo(db.Account);
 

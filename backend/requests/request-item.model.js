@@ -4,13 +4,14 @@ module.exports = model;
 
 function model(sequelize) {
   const attributes = {
-    name: {
+    description: {
       type: DataTypes.STRING,
       allowNull: false
     },
     quantity: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      defaultValue: 1
     },
     requestId: {
       type: DataTypes.INTEGER,
@@ -23,7 +24,7 @@ function model(sequelize) {
   };
 
   const options = {
-    timestamps: false
+    timestamps: true
   };
 
   return sequelize.define('requestItem', attributes, options);
