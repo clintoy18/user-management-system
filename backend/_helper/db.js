@@ -16,7 +16,7 @@ async function initialize() {
         console.log('Initial connection successful');
         
         // Create the database if it doesn't exist
-        await connection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\`;`);
+        await connection.query(`DROP DATABASE IF EXISTS \`${database}\`;`);
         console.log('Database creation/verification successful');
 
         // Close the connection after database creation
