@@ -39,10 +39,23 @@ export class AccountService {
     }
 
     logout() {
-        const refreshToken = this.getRefreshTokenFromCookie();
-        this.http.post<any>(`${baseUrl}/revoke-token`, { token: refreshToken }, { withCredentials: true }).subscribe();
+        // Clean up local state first
         this.stopRefreshTokenTimer();
         this.accountSubject.next(null);
+        localStorage.removeItem('account');
+
+        // Attempt to revoke the token, but don't wait for it
+        const refreshToken = this.getRefreshTokenFromCookie();
+        if (refreshToken) {
+            this.http.post<any>(`${baseUrl}/revoke-token`, { token: refreshToken }, { withCredentials: true })
+                .subscribe({
+                    error: (error) => {
+                        console.error('Error revoking token:', error);
+                    }
+                });
+        }
+
+        // Navigate to login page
         this.router.navigate(['/account/login']);
     }
 
