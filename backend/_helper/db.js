@@ -17,8 +17,15 @@ async function initialize() {
     // Close the connection after database creation
     await connection.end();
 
-    // Now connect to the database
-    const sequelize = new Sequelize(database, user, password, { dialect: 'mysql' });
+    // Now connect to the database with additional configuration
+    const sequelize = new Sequelize(database, user, password, { 
+        dialect: 'mysql',
+        dialectOptions: {
+            dateStrings: true,
+            typeCast: true
+        },
+        timezone: '+00:00' // Set timezone to UTC
+    });
 
     // Initialize models and add them to the exported db object
     db.Account = require('../accounts/account.model')(sequelize);
@@ -56,6 +63,9 @@ async function initialize() {
     });
 
     db.RefreshToken.belongsTo(db.Account);
+
+    // Drop the Workflows table if it exists
+    await sequelize.query('DROP TABLE IF EXISTS Workflows;');
 
     // Sync all models with the database (alter tables to match model changes)
     await sequelize.sync({ alter: true });

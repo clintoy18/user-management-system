@@ -61,6 +61,51 @@ async function employeeDetails(employee) {
     };
 }
 
+async function createOnboardingWorkflow(employee) {
+    const workflow = await db.Workflow.create({
+        employeeId: employee.id,
+        type: 'onboarding',
+        status: 'pending',
+        startDate: new Date(),
+        description: `Onboarding workflow for ${employee.employeeId}`,
+        totalSteps: 5,
+        metadata: {
+            checklist: [
+                "IT Setup",
+                "HR Documentation",
+                "Department Introduction",
+                "Training Schedule",
+                "Final Review"
+            ]
+        }
+    });
+    return workflow;
+}
+
+async function createTransferWorkflow(employee, oldDepartmentId, newDepartmentId) {
+    const oldDepartment = await db.Department.findByPk(oldDepartmentId);
+    const newDepartment = await db.Department.findByPk(newDepartmentId);
+    
+    const workflow = await db.Workflow.create({
+        employeeId: employee.id,
+        type: 'transfer',
+        status: 'pending',
+        startDate: new Date(),
+        description: `Department transfer from ${oldDepartment.name} to ${newDepartment.name}`,
+        totalSteps: 4,
+        metadata: {
+            checklist: [
+                "Complete handover in current department",
+                "Update system access and permissions",
+                "New department orientation",
+                "Final transfer confirmation"
+            ],
+            oldDepartment: oldDepartment.name,
+            newDepartment: newDepartment.name
+        }
+    });
+    return workflow;
+}
 
 async function create(params){
     // validation
@@ -85,6 +130,10 @@ async function create(params){
     const employee = new db.Employee(params);
     // save employee
     await employee.save();
+
+    // Create onboarding workflow
+    await createOnboardingWorkflow(employee);
+
     return employeeDetails(employee);
 }
 
@@ -144,10 +193,17 @@ async function transferEmployee(employeeId, newDepartmentId) {
         throw 'Cannot transfer to the same department';
     }
     
+    // Store the old department ID before updating
+    const oldDepartmentId = employee.departmentId;
+    
     // Update the employee's department
     employee.departmentId = newDepartmentId;
     await employee.save();
     console.log('Employee updated with new department');
+    
+    // Create transfer workflow
+    await createTransferWorkflow(employee, oldDepartmentId, newDepartmentId);
+    console.log('Transfer workflow created');
     
     // Get the updated employee details
     const updatedEmployee = await employeeDetails(employee);
