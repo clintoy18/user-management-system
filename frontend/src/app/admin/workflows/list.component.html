@@ -62,6 +62,9 @@
                 <tr *ngIf="!loading && workflows.length === 0">
                     <td colspan="6" class="text-center">No workflows found</td>
                 </tr>
+                <div class="text-end mt-4">
+                    <button [routerLink]="['/admin/employees']" class="btn btn-secondary">Back to Employees</button>
+            </div>
             </tbody>
         </table>
     </div>
