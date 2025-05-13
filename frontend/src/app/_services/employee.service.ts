@@ -26,4 +26,18 @@ export class EmployeeService {
     delete(id: string) {
         return this.http.delete(`${environment.apiUrl}/employees/${id}`);
     }
+
+    transfer(employeeId: string, departmentId: number) {
+        if (!employeeId || !departmentId) {
+            throw new Error('Employee ID and department ID are required');
+        }
+        console.log('Transfer request:', { 
+            employeeId, 
+            newDepartmentId: departmentId 
+        });
+        return this.http.post<any>(`${environment.apiUrl}/employees/transfer`, {
+            employeeId: employeeId.toString(),
+            newDepartmentId: Number(departmentId)
+        });
+    }
 } 

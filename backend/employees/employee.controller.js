@@ -42,7 +42,7 @@ function updateSchema(req, res, next) {
 
 function transferSchema(req, res, next) {
     const schema = Joi.object({
-        employeeId: Joi.number().required(),
+        employeeId: Joi.string().required(),
         newDepartmentId: Joi.number().required()
     });
     validateRequest(req, next, schema);
@@ -82,14 +82,26 @@ function _delete(req, res, next) {
 async function transfer(req, res, next) {
     try {
         const { employeeId, newDepartmentId } = req.body;
+        console.log('Transfer request received:', { employeeId, newDepartmentId });
         
         if (!employeeId || !newDepartmentId) {
             return res.status(400).json({ message: 'Employee ID and new department ID are required' });
         }
         
         const updatedEmployee = await employeeService.transferEmployee(employeeId, newDepartmentId);
+        console.log('Transfer successful:', updatedEmployee);
         res.json(updatedEmployee);
     } catch (error) {
+        console.error('Transfer error:', error);
+        if (error === 'Employee not found') {
+            return res.status(404).json({ message: error });
+        }
+        if (error === 'Department not found') {
+            return res.status(404).json({ message: error });
+        }
+        if (error === 'Cannot transfer to the same department') {
+            return res.status(400).json({ message: error });
+        }
         next(error);
     }
 }

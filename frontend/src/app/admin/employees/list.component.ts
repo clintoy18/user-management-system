@@ -35,6 +35,6 @@ export class ListComponent implements OnInit {
     }
 
     transfer(id: string) {
-        this.router.navigate(['transfer', id], { relativeTo: this.router.routerState.root.firstChild });
+        this.router.navigate(['/admin/employees/transfer', id]);
     }
 } 
