@@ -39,10 +39,17 @@ export class AccountService {
     }
 
     logout() {
-        this.http.post<any>(`${baseUrl}/revoke-token`, {}, { withCredentials: true }).subscribe();
+        const refreshToken = this.getRefreshTokenFromCookie();
+        this.http.post<any>(`${baseUrl}/revoke-token`, { token: refreshToken }, { withCredentials: true }).subscribe();
         this.stopRefreshTokenTimer();
         this.accountSubject.next(null);
         this.router.navigate(['/account/login']);
+    }
+
+    // Helper to get refresh token from cookie
+    private getRefreshTokenFromCookie(): string | null {
+        const match = document.cookie.match(new RegExp('(^| )refreshToken=([^;]+)'));
+        return match ? match[2] : null;
     }
 
     refreshToken() {
@@ -75,19 +82,19 @@ export class AccountService {
     }
 
     getAll() {
-        return this.http.get<Account[]>(baseUrl);
+        return this.http.get<Account[]>(baseUrl, { withCredentials: true });
     }
 
     getById(id: string) {
-        return this.http.get<Account>(`${baseUrl}/${id}`);
+        return this.http.get<Account>(`${baseUrl}/${id}`, { withCredentials: true });
     }
 
     create(params: any) {
-        return this.http.post(baseUrl, params);
+        return this.http.post(baseUrl, params, { withCredentials: true });
     }
 
     update(id, params) {
-        return this.http.put(`${baseUrl}/${id}`, params)
+        return this.http.put(`${baseUrl}/${id}`, params, { withCredentials: true })
             .pipe(map((account: any) => {
                 // update the current account if it was updated
                 if (account.id === this.accountValue.id) {
@@ -100,7 +107,7 @@ export class AccountService {
     }    
 
     delete(id: string) {
-        return this.http.delete(`${baseUrl}/${id}`)
+        return this.http.delete(`${baseUrl}/${id}`, { withCredentials: true })
             .pipe(finalize(() => {
                 // auto logout if the logged in account was deleted
                 if (id === this.accountValue.id) 
@@ -109,12 +116,12 @@ export class AccountService {
     }
 
     deactivateAccount(id: number) {
-        return this.http.put(`${baseUrl}/accounts/${id}/deactivate`, {});
-      }
-      
+        return this.http.put(`${baseUrl}/accounts/${id}/deactivate`, {}, { withCredentials: true });
+    }
+    
     activateAccount(id: number) {
-        return this.http.put(`${baseUrl}/accounts/${id}/activate`, {});
-      }
+        return this.http.put(`${baseUrl}/accounts/${id}/activate`, {}, { withCredentials: true });
+    }
       
 
     // helper methods
