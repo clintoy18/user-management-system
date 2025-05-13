@@ -1,13 +1,21 @@
-export interface Request {
-    id: string;
-    title: string;
+import { Employee } from './employee';
+
+export interface RequestItem {
+    id: number;
     description: string;
-    status: 'pending' | 'approved' | 'rejected';
+    quantity: number;
+    requestId: number;
+}
+
+export interface Request {
+    id: number;
+    type: 'equipment' | 'leave' | 'resource' | 'other';
+    status: 'Pending' | 'Approved' | 'Rejected';
+    description: string;
     createdAt: string;
     updatedAt: string;
-    userId: string;
-    userName?: string;
-    type?: string;
-    employee?: string;
-    items?: any[];
+    employeeId: number;
+    isActive: boolean;
+    employee?: Employee;
+    items?: RequestItem[];
 } 

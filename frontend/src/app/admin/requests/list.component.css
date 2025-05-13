@@ -1,0 +1,22 @@
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.badge {
+    font-size: 0.85em;
+    padding: 0.5em 0.75em;
+}
+
+.btn-group .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.list-unstyled li {
+    margin-bottom: 0.25rem;
+}
+
+.text-muted {
+    font-size: 0.875rem;
+} 
