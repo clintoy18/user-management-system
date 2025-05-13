@@ -9,7 +9,8 @@ module.exports = {
     _delete,
     getByEmployeeId,
     updateStatus,
-    workflowDetails
+    workflowDetails,
+    getWorkflowModelById
 };
 
 async function getAll() {
@@ -62,14 +63,14 @@ async function create(params) {
 }
 
 async function update(id, params) {
-    const workflow = await getById(id);
+    const workflow = await getWorkflowModelById(id);
     Object.assign(workflow, params);
     await workflow.save();
     return workflowDetails(workflow);
 }
 
 async function updateStatus(id, status) {
-    const workflow = await getById(id);
+    const workflow = await getWorkflowModelById(id);
     workflow.status = status;
     if (status === 'completed') {
         workflow.endDate = new Date();
@@ -109,4 +110,10 @@ function workflowDetails(workflow) {
             } : null
         } : null
     };
+}
+
+async function getWorkflowModelById(id) {
+    const workflow = await db.Workflow.findByPk(id);
+    if (!workflow) throw 'Workflow not found';
+    return workflow;
 } 

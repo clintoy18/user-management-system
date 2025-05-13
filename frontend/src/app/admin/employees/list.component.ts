@@ -22,19 +22,19 @@ export class ListComponent implements OnInit {
         this.router.navigate(['/admin/employees/add']);
     }
 
-    edit(id: string) {
+    edit(id: number) {
         this.router.navigate(['edit', id], { relativeTo: this.router.routerState.root.firstChild });
     }
 
-    viewRequests(id: string) {
+    viewRequests(id: number) {
         this.router.navigate(['/admin/requests'], { queryParams: { employeeId: id } });
     }
 
-    viewWorkflows(id: string) {
+    viewWorkflows(id: number) {
         this.router.navigate(['/admin/workflows'], { queryParams: { employeeId: id } });
     }
 
-    transfer(id: string) {
+    transfer(id: number) {
         this.router.navigate(['/admin/employees/transfer', id]);
     }
 } 
