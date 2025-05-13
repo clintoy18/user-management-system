@@ -12,7 +12,7 @@ function model(sequelize) {
       type: DataTypes.INTEGER,
       unique: true,
       references: {
-        model: 'Accounts',
+        model: 'accounts',
         key: 'id'
       },
       allowNull: false
