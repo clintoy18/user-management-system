@@ -17,6 +17,9 @@ function authorize(roles = []) {
 
         // authorize based on user role
         async (req, res, next) => {
+            if (!req.user) {
+                return res.status(401).json({ message: 'Unauthorized: No user in request' });
+            }
             const account = await db.Account.findByPk(req.user.id);
 
             if (!account || (roles.length && !roles.includes(account.role))) {
