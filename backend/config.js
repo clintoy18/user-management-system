@@ -24,7 +24,7 @@ module.exports = {
     port: parseInt(process.env.SMTP_PORT) || 587,
     auth: {
       user: process.env.SMTP_USER || 'your-smtp-user',
-      pass: process.env.SMTP_PASS || 'your-smtp-password'
+      pass: process.env.SMTP_PASSWORD || 'your-smtp-password'
     }
   }
 }; 
