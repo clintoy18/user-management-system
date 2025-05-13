@@ -23,7 +23,7 @@ export class ListComponent implements OnInit {
     }
 
     edit(id: number) {
-        this.router.navigate(['edit', id], { relativeTo: this.router.routerState.root.firstChild });
+        this.router.navigate(['/admin/employees/edit', id]);
     }
 
     viewRequests(id: number) {

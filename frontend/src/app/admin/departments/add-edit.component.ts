@@ -55,7 +55,7 @@ export class AddEditComponent implements OnInit {
         this.departmentService.create(this.form.value)
             .subscribe({
                 next: () => {
-                    this.router.navigate(['../'], { relativeTo: this.route });
+                    this.router.navigate(['/admin/departments'], { relativeTo: this.route });
                 },
                 error: error => {
                     this.loading = false;
@@ -67,7 +67,7 @@ export class AddEditComponent implements OnInit {
         this.departmentService.update(this.id, this.form.value)
             .subscribe({
                 next: () => {
-                    this.router.navigate(['../'], { relativeTo: this.route });
+                    this.router.navigate(['/admin/departments'], { relativeTo: this.route });
                 },
                 error: error => {
                     this.loading = false;
