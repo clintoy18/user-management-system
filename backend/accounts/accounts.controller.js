@@ -70,7 +70,7 @@ function refreshToken(req, res, next) {
 
 function revokeTokenSchema(req, res, next) {
     const schema = Joi.object({
-        token: Joi.string().empty('')
+        token: Joi.string().allow('').allow(null)
     });
     validateRequest(req, next, schema);
 }
