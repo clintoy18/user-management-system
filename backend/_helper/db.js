@@ -10,7 +10,7 @@ async function initialize() {
     try {
         // Create the database if it doesn't already exist
         const { host, port, user, password, database } = config.database;
-        console.log('Attempting to connect to database...', { host, port, database });
+        console.log('Attempting to connect to database...', { host, port, database, user, password });
         
         const connection = await mysql.createConnection({ host, port, user, password });
         console.log('Initial connection successful');
@@ -21,7 +21,6 @@ async function initialize() {
 
         // Close the connection after database creation
         await connection.end();
-
         // Now connect to the database with additional configuration
         const sequelize = new Sequelize(database, user, password, { 
             host,
