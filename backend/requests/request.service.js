@@ -109,7 +109,6 @@ async function create(params) {
         throw new Error('Employee not found');
     }
 
-    const transaction = await db.sequelize.transaction();
     try {
         // Create the request
         const request = await db.Request.create({
@@ -118,7 +117,7 @@ async function create(params) {
             employeeId: params.employeeId,
             status: 'Pending',
             isActive: true
-        }, { transaction });
+        });
 
         // Create request items if provided
         if (params.items && Array.isArray(params.items) && params.items.length > 0) {
@@ -127,11 +126,9 @@ async function create(params) {
                     description: item.description,
                     quantity: item.quantity || 1,
                     requestId: request.id
-                }, { transaction });
+                });
             }
         }
-
-        await transaction.commit();
 
         // Get the complete request with items
         const completeRequest = await db.Request.findByPk(request.id, {
@@ -155,7 +152,6 @@ async function create(params) {
 
         return requestDetails(completeRequest);
     } catch (error) {
-        await transaction.rollback();
         throw error;
     }
 }
