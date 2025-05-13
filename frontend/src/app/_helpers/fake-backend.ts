@@ -106,7 +106,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
         function authenticate() {
             const { email, password } = body;
-            const account = accounts.find(x => x.email === email && x.password === password && x.isVerified);
+            const account = accounts.find(x => x.email === email && x.password === password );
         
             if (!account) return error('Email or password is incorrect');
             if (!account.isActive) return error('Account is deactivated');
