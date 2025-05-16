@@ -1,11 +1,11 @@
 {
 
   "database": {
-    "host": "localhost",
+    "host": "153.92.15.31",
     "port": 3306,
-    "user": "root",
-    "password": "",
-    "database": "node-mysql-signup-verification-apistart-final"
+    "user": "u875409848_sample ",
+    "password": "password",
+    "database": "u875409848_sample "
   },
   "secret": "your-jwt-secret",
   "emailFrom": "your-email@example.com",
