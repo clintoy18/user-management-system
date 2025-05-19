@@ -38,8 +38,8 @@
         <button 
           (click)="deactivateAccount(account.id)" 
           class="btn btn-sm btn-warning mr-1" 
-          [disabled]="!account.isActive || account.isDeactivating || account.role === 'admin'"
-          [class.disabled]="account.isDeactivating || account.role === 'admin'"
+          [disabled]="!account.isActive || account.isDeactivating || account.role === 'Admin'"
+          [class.disabled]="account.isDeactivating || account.role === 'Admin'"
           aria-label="Deactivate account">
           <span *ngIf="account.isDeactivating" class="spinner-border spinner-border-sm"></span>
           <span *ngIf="!account.isDeactivating">Deactivate</span>
