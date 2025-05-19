@@ -38,7 +38,7 @@ export class ListComponent implements OnInit {
 
   deactivateAccount(id: number) {
     const account = this.accounts.find(x => x.id === id);
-    if (account) {
+    if (account && account.role !== 'admin') {
       account.isDeactivating = true;
       this.accountService.deactivateAccount(id)
         .pipe(first())

@@ -12,12 +12,20 @@ async function initialize() {
     const { host, port, user, password, database } = config.database;
     console.log('Attempting to connect to database...', { host, port, database, user });
 
+    // Create initial connection without database
     const connection = await mysql.createConnection({ host, port, user, password });
     console.log('Initial connection successful');
 
-    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\`;`);
+    // // Drop database if exists
+    // console.log(`Dropping database '${database}' if it exists...`);
+    // await connection.query(`DROP DATABASE IF EXISTS \`${database}\`;`);
+    // console.log('Database dropped successfully');
+
+    // Create fresh database
+    console.log(`Creating fresh database '${database}'...`);
+    await connection.query(`CREATE DATABASE \`${database}\`;`);
     await connection.end();
-    console.log('Database verified/created');
+    console.log('Database created successfully');
 
     const sequelize = new Sequelize(database, user, password, {
       host,
