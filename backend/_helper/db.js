@@ -16,10 +16,10 @@ async function initialize() {
     const connection = await mysql.createConnection({ host, port, user, password });
     console.log('Initial connection successful');
 
-    // // Drop database if exists
-    // console.log(`Dropping database '${database}' if it exists...`);
-    // await connection.query(`DROP DATABASE IF EXISTS \`${database}\`;`);
-    // console.log('Database dropped successfully');
+    // Drop database if exists 
+    console.log(`Dropping database '${database}' if it exists...`);
+    await connection.query(`DROP DATABASE IF EXISTS \`${database}\`;`);
+    console.log('Database dropped successfully');
 
     // Create fresh database
     console.log(`Creating fresh database '${database}'...`);
